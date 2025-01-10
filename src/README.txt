@@ -1,0 +1,184 @@
+Concept:
+
+* Basic steps:
+** Generate/get lots of plaintext data
+** Encrypt it and track information about data.
+** Calculate a lot of features on the data
+** Feature selection
+** Run features through model to train (traditioanlly split input data into testing data (~15%ish) ad training data (~85%ish))
+** (Optionally, just to see how the model is performing): run on new data to see how accurate it is
+*** "Run" as in make it try to guess various things about the data, not just the key or cipher type
+*** We likely should use different models and different feature selection methods for each thing we're attempting to guess
+
+
+* Things to multiprocess/distibute processing of:
+** Generate feature calculation
+** Model training
+** Everything, but for each thing we're trying to guess (e.g., one machine for one thing we're trying to guess (one machine for file type, one machine for cipher type, etc.), but probably more than 1 machine for each if we're getting serious).
+** Fetaure selection
+** Data generation
+
+
+* Feature selection thoughts:
+*** Keep all feature information, but mark each feature as "good enough" or not
+**** "Good enough" according to what?
+**** List whsat feature selection methods say it was or wasn't good enough
+**** Ensure the heuristic we used/gave to the feature selection method is tracked.
+**** So that later we can re-calculate feature selection methods as more data is obtained and continue improving our model.
+
+
+* Information to track:
+** About plaintext:
+*** Did we geerate it?
+*** What kind of data is it? (see below for types of data/files)
+*** Where is it from if we didn't generate it? In general, source = ?
+** About ciphertext
+*** To track:
+**** Original plaintext
+**** Ciphertext
+**** If a nonce was used
+***** What the nonce was if so
+**** If a IV was used
+***** What the IV was if so
+**** Key size
+**** Key
+**** The cipher
+**** The crypto library used - implementation could matter slightly in some cases (maybe just for randomness/seeding, but maybe for other stuff too, IDK)?
+**** Entropy source
+***** srand and rand?
+***** seed? if possible
+***** /dev/urandom?
+***** /dev/random?
+***** Windows GenRandom or whatever? Not sure what to do here if we're running on Linux primarily.
+****** Maybe can write a data generation portion to run on Windows and store data so the rest can run on Linux
+**** OS information? (Could impact randomness?)
+***** Optional
+**** Local system time? Remote time probably doesn't really matter.
+***** If so, maybe try data generation/encryption runs on machines where we spoof the time.
+
+* Generate or obtain lots of plaintext data of different varietes.
+** Random binary
+** Random ASCII
+** Sparse random ASCII
+** Sparse random binary
+** Common file types - see below
+*** Likely need to borrow some from other sources and may need to worry about copyright stuff?
+*** Some will require large amounts of storage, like videos
+
+* Maybe turn certain things or everything into services so that we can consistantly be generating and/or obtaining data and running it trough the pipeline to other steps and constantly improving the model.
+** Being able to use the model for classification while submitting training data?
+
+Things to determine/guess based on ciphertext:
+* File type (see below: Video file? Audio file? Plaintext ASCII? Source code? Compressed file? Uncompresesd archive? Etc.)
+* Cipher type
+* Key size
+* Nonce used?
+* IV used?
+* AEAD?
+* Is it just a hash?
+* The key itself
+
+* Do all feature calculations on:
+** Just ciphertext/input
+** Various transformations (configurable) on the ciphertext/input
+*** An attempted decryption (sometimes it can complete even if incorrectly, depending on the cipher)
+*** Various XOR and other simple math-y operations
+**** Linear
+*** Some transformations similar to decryption, but maybe only 1 or a couple steps
+**** Mostly non-linear
+**** Can borrow these from various existing ciphers.
+
+* For some high-level API, if failing to determine what it is, run through `file`, `binwalk`, etc. in case its not really ciphertext
+
+
+** File types (to try to guess for only given ciphertext):
+*** Various compression file formats
+**** Examples:
+***** gzip
+***** 7zip
+***** rar
+***** zip
+***** lzma
+***** bz2
+***** zlib
+***** tar archive (uncompressed)
+***** tar archive (compressed)
+*** Various other file types:
+**** base64
+**** JSON
+**** YAML
+****
+*** Video file types
+**** Examples:
+***** mp4
+***** mkv
+***** mpeg
+***** flv
+***** etc.
+**** Pull from YouTube, vimeo, etc.
+*** Audio file types
+**** Examples:
+***** mp3
+***** flac
+***** wav
+***** etc.
+*** Executable file types
+**** Examples:
+***** exe
+***** dll
+***** elf
+***** .so
+***** .a
+***** .lib
+***** .o
+*** Plaintext source code files
+**** Examples:
+***** C
+***** C++
+***** Python
+***** Java
+***** Perl
+***** Bash/shell
+**** Pull lots from GitHub and elsewhere
+*** Document file types
+**** Examples:
+***** doc
+***** docx
+***** pdf
+***** markdown
+***** asciidoc
+***** rtf
+***** epub
+***** mobi
+
+
+Ideas:
+
+* Probably written in C/C++
+** Faster than Python
+*** Can still write a Python layer later.
+** Multiprocessing might actually be easier because of that weird deadlocking issue.
+
+
+* Distributed computing
+
+** For data work
+*** Feature calculation
+
+** For ML work
+*** Model training
+*** Data classification
+
+** Maybe come up with simple custom distributed computation solution? Just an init stage (SSH in, put the code in place, ensure dependencies are installed, etc.), then "set up comms" stage (set up sockets/server, start up services/applications)
+
+
+* Database
+
+** Local initially, remote eventually.
+*** Use ORM or at least a middleware/adapter class.
+
+** Spark?
+*** Not sure if super good distributd processing support.
+** Hadoop?
+*** Not sure yet if Python API exists. Sahara?
+
