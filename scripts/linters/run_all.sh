@@ -30,6 +30,6 @@ fi
 
 printf "%d lint scripts failed\\n" "${#FAILED_SCRIPTS[@]}"
 for FAILED_SCRIPT in "${FAILED_SCRIPTS[@]}"; do
-  printf "\t%d\n" "${FAILED_SCRIPT}"
+  printf "\t%s\n" "${FAILED_SCRIPT}"
 done
 exit 1

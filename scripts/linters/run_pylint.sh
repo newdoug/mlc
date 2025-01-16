@@ -4,10 +4,9 @@ if [ "$DEBUG" = "1" ]; then
   set -x
 fi
 
-SCRIPTDIR="$(readlink -f "$(dirname "$0")")"
 DST="$1"
 if [ -z "$DST" ]; then
-  DST="$SCRIPTDIR"
+  DST="$(pwd)"
 else
   if [ ! -d "$DST" ]; then
     printf "Input path wasn't a directory: '%s'\\n" "$DST" >&2
