@@ -56,7 +56,7 @@ Concept:
 **** Local system time? Remote time probably doesn't really matter.
 ***** If so, maybe try data generation/encryption runs on machines where we spoof the time.
 
-* Generate or obtain lots of plaintext data of different varietes.
+* Generate or obtain lots of plaintext data of different varieties.
 ** Random binary
 ** Random ASCII
 ** Sparse random ASCII
@@ -65,7 +65,7 @@ Concept:
 *** Likely need to borrow some from other sources and may need to worry about copyright stuff?
 *** Some will require large amounts of storage, like videos
 
-* Maybe turn certain things or everything into services so that we can consistantly be generating and/or obtaining data and running it trough the pipeline to other steps and constantly improving the model.
+* Maybe turn certain things or everything into services so that we can constantly be generating and/or obtaining data and running it trough the pipeline to other steps and constantly improving the model.
 ** Being able to use the model for classification while submitting training data?
 
 Things to determine/guess based on ciphertext:
@@ -76,7 +76,11 @@ Things to determine/guess based on ciphertext:
 * IV used?
 * AEAD?
 * Is it just a hash?
-* The key itself
+* Hash type?
+* Is it a MAC?
+* MAC type?
+* The key itself - big if true
+* If not the actual key, perhaps some range information about the key. E.g., "first 32 bits of key are between X and Y" or "the entire key is between X and Y"
 
 * Do all feature calculations on:
 ** Just ciphertext/input
@@ -178,7 +182,7 @@ Ideas:
 *** Use ORM or at least a middleware/adapter class.
 
 ** Spark?
-*** Not sure if super good distributd processing support.
+*** Not sure if super good distributed processing support.
 ** Hadoop?
 *** Not sure yet if Python API exists. Sahara?
 
