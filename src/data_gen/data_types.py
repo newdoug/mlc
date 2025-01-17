@@ -8,6 +8,8 @@ except (ImportError, ModuleNotFoundError):
 
 
 # TODO: `DataType` base class if useful? E.g. provide a `generate()` method
+# TODO: put each into relevant other source file
+
 
 class RandomDataType(BetterEnum):
     """Types of random data to generate"""
@@ -15,25 +17,6 @@ class RandomDataType(BetterEnum):
     BINARY = auto()
     SPARSE_ASCII = auto()
     SPARSE_BIN = auto()
-
-
-class MiscFileDataTypes(BetterEnum):
-    """Miscellaneous/Config (sometimes) and other file formats (e.g., YAML,
-    JSON, base64, etc.)
-    """
-    # Generic data storage formats
-    BASE64 = auto()
-    CSV = auto()
-    INI = auto()
-    JSON = auto()
-    SAML = auto()
-    TOML = auto()
-    XML = auto()
-    YAML = auto()
-    YANG = auto()
-
-    # Very specific
-    NGINX_CONF = auto()
 
 
 class AudioDataType(BetterEnum):
@@ -119,12 +102,32 @@ class DocumentDataType(BetterEnum):
     EPUB = auto()
     # HOCON is a superset of .properties and .json, so leaving that off
     MARKDOWN = auto()
-    MOBI = auto()
     MS_DOC = auto()
     MS_DOCX = auto()
+    # TODO: there are more book formats (at least one I can't remember right
+    #       now)
     MOBI = auto()
     PDF = auto()
     PLIST = auto()
     PROPERTIES = auto()
     RTF = auto()
     # TODO: much more
+
+
+class MiscFileDataTypes(BetterEnum):
+    """Miscellaneous/Config (sometimes) and other file formats (e.g., YAML,
+    JSON, base64, etc.)
+    """
+    # Generic data storage formats
+    BASE64 = auto()
+    CSV = auto()
+    INI = auto()
+    JSON = auto()
+    SAML = auto()
+    TOML = auto()
+    XML = auto()
+    YAML = auto()
+    YANG = auto()
+
+    # Very specific
+    NGINX_CONF = auto()
