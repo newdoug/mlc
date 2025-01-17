@@ -2,6 +2,7 @@
 """Data compression and decompression utilities"""
 
 import bz2
+from enum import auto
 import gzip
 import lzma
 import os
@@ -10,7 +11,10 @@ import tempfile
 from typing import Callable, Dict, Optional, Tuple
 import zlib
 
-from .utils import BetterEnum
+try:
+    from .utils import BetterEnum
+except (ImportError, ModuleNotFoundError):
+    from utils import BetterEnum
 
 
 __all__ = [
@@ -81,18 +85,61 @@ _from_tar_xz = lambda data: _from_tar_data(data, "r:xz")
 class CompressionType(BetterEnum):
     """Type of compression algorithm"""
     # pylint: disable=too-few-public-methods
-    GZIP = "GZIP"
+    GZIP = auto()
     # TODO
-    # 7ZIP = "7ZIP"
-    # RAR = "RAR"
-    # ZIP = "ZIP"
-    LZMA = "LZMA"
-    BZ2 = "BZ2"
-    ZLIB = "ZLIB"
-    TAR = "TAR"
-    TAR_GZ = "TAR_GZ"
-    TAR_BZ2 = "TAR_BZ2"
-    TAR_XZ = "TAR_XZ"
+    # 7ZIP = auto()
+    # RAR = auto()
+    # ZIP = auto()
+    # DEFLATE = auto()
+    # LZ4 = auto()
+    # ZSTD = auto()
+    # SNAPPY = auto()
+    # BROTLI = auto()
+    # Lempel-Ziv-Welch
+    # LZW = auto()
+    # LZ77 = auto()
+    # LZ78 = auto()
+    # PAQ = auto()
+    # PPM = auto()
+    # Run-length encoding
+    # RLE = auto()
+    # HUFFMAN = auto()
+    # DELTA = auto()
+    #
+    # Burrows-Wheeler transform
+    # BWT = auto()
+    LZMA = auto()
+    BZ2 = auto()
+    ZLIB = auto()
+    TAR = auto()
+    TAR_GZ = auto()
+    TAR_BZ2 = auto()
+    TAR_XZ = auto()
+
+
+DELTA_EX_CODE = """
+void delta_encode(unsigned char *buffer, int length)
+{
+    unsigned char last = 0;
+    for (int i = 0; i < length; i++)
+    {
+        unsigned char current = buffer[i];
+        buffer[i] = current - last;
+        last = current;
+    }
+}
+
+void delta_decode(unsigned char *buffer, int length)
+{
+    unsigned char last = 0;
+    for (int i = 0; i < length; i++)
+    {
+        unsigned char delta = buffer[i];
+        buffer[i] = delta + last;
+        last = buffer[i];
+    }
+}
+"""
 
 
 # Compress function, decompress function, compression level kwarg name, max

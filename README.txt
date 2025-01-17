@@ -3,6 +3,10 @@ Concept:
 * Basic steps:
 ** Generate/get lots of plaintext data
 ** Encrypt it and track information about data.
+*** Optionally compress instead of encrypt
+*** Optionally compress and *then* encrypt
+**** Basically the same entire problem, but given compressed bytes instead of
+ciphertext
 ** Calculate a lot of features on the data
 ** Feature selection
 ** Run features through model to train (traditioanlly split input data into testing data (~15%ish) ad training data (~85%ish))

@@ -14,17 +14,12 @@ import os
 import sys
 from typing import List
 
-from .compression import CompressionType
-from .crypto.types import CipherType
-from .utils import BetterEnum
-
-
-class DataType(BetterEnum):
-    """Types of random data to generate"""
-    ASCII = "ASCII"
-    BINARY = "BIN"
-    SPARSE_ASCII = "SPARSE_ASCII"
-    SPARSE_BIN = "SPARSE_BIN"
+try:
+    from .compression import CompressionType
+    from .crypto.types import CipherType
+except (ImportError, ModuleNotFoundError):
+    from compression import CompressionType
+    from crypto.types import CipherType
 
 
 def main(args: List[str]) -> int:
