@@ -68,6 +68,7 @@ Concept:
 * Maybe turn certain things or everything into services so that we can constantly be generating and/or obtaining data and running it trough the pipeline to other steps and constantly improving the model.
 ** Being able to use the model for classification while submitting training data?
 
+
 Things to determine/guess based on ciphertext:
 * File type (see below: Video file? Audio file? Plaintext ASCII? Source code? Compressed file? Uncompresesd archive? Etc.)
 * Cipher type
@@ -76,9 +77,21 @@ Things to determine/guess based on ciphertext:
 * IV used?
 * AEAD?
 * Is it just a hash?
-* Hash type?
+* Hash type? (obviously is much easier to guess given the size, but assume
+  that's not necessarily the tell - maybe even train on substrings or on
+  concatenated hashes)
+** Same for CRCs and checksums
+** In future: could have a secondary computation lookup thing to lookup in table
+to see if it's a known hash.
+*** Similar for CRC's, checksums, etc. Especially since those are more likely to
+be duplicated. If given one, can return all known source bytes so user can maybe
+see if any look especially useful.
+* ECCs
+** Reed-solomon
 * Is it a MAC?
 * MAC type?
+* Digital signatures
+* Compression algorithm
 * The key itself - big if true
 * If not the actual key, perhaps some range information about the key. E.g., "first 32 bits of key are between X and Y" or "the entire key is between X and Y"
 
@@ -186,3 +199,17 @@ Ideas:
 ** Hadoop?
 *** Not sure yet if Python API exists. Sahara?
 
+
+# TODO
+
+* Move tests/ out of src/
+* More comprehensive unit tests
+** More unit tests in general - some things aren't unit tested at all
+* More algorithms to finish implementing
+** Hashing algs
+** CRC algs
+** Checksum algs
+* Define `__all__` more consistently for everyone
+* Run linters and resolve issues
+* CI/CD - run tests in GH job(s)?
+* Distrubute processing across actual nodes (AWS, etc.)

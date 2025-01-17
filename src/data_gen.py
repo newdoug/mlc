@@ -49,6 +49,13 @@ def main(args: List[str]) -> int:
              "plaintext",
         choices=CipherType.values(),
         nargs="+")
+    # TODO: doesn't jive well with accepting multiple ciphers. Maybe accept
+    # "ALG-<KEY_SIZE>" (so probably not an enum for encrypt algs since that'd be
+    # quite a large list)
+    # parser.add_argument(
+    #     "--key-size",
+    #     help="Key size (in bits) to use for encryption",
+    #     type=int)
     parsed_args = parser.parse_args(args)
 
     return 0

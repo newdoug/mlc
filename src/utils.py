@@ -4,7 +4,7 @@ import enum
 from typing import List
 
 
-__ALL__ = [
+__all__ = [
     "BetterEnum",
 ]
 
@@ -13,6 +13,11 @@ class BetterEnum(enum.Enum):
     """Slightly improved enum class. Just adds a couple conveniences"""
 
     @classmethod
+    def names(cls) -> List[str]:
+        """Returns names of the members of the enum"""
+        return list(el.name for el in cls)
+
+    @classmethod
     def values(cls) -> List:
-        """Returns members/values of the enum"""
-        return list(cls.__members__.keys())
+        """Returns values of the members of the enum"""
+        return list(el.value for el in cls)

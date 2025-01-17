@@ -4,7 +4,7 @@ import os
 
 
 class Crypter:
-    """Base class for encryptor/decrytor objects"""
+    """Base class for encryptor/decryptor objects"""
     def __init__(self, key_size_bits: int = 256):
         assert key_size_bits % 8 == 0
         self.key_size_bits = key_size_bits
