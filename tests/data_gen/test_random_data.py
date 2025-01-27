@@ -45,3 +45,35 @@ class TestRandIntInRange(unittest.TestCase):
                 # Try to decode as ASCII. It'll raise an exception if it fails
                 int.to_bytes(value, length=1,
                              byteorder="little").decode("ASCII")
+
+    def test_low_range_is_possible(self):
+        """Test that low value in range is inclusive"""
+        # Very unlikely that a value in this range would not happen with this
+        # many iterations
+        for _ in range(100000):
+            if 2 == rand_int_in_range(2, 10):
+                # Success case
+                return False
+        self.assertTrue(
+            False, msg="Low range never occurred: may not be possible")
+
+    def test_low_range_0_is_possible(self):
+        """Test that low value in range is inclusive when it's 0"""
+        # Very unlikely that a value in this range would not happen with this
+        # many iterations
+        for _ in range(100000):
+            if 0 == rand_int_in_range(0, 10):
+                # Success case
+                return False
+        self.assertTrue(
+            False, msg="Low range (0) never occurred: may not be possible")
+
+    def test_high_range_is_not_possible(self):
+        """Test that high value in range is exclusive"""
+        for _ in range(1000):
+            if rand_int_in_range(2, 10) > 9:
+                self.assertTrue(
+                    False,
+                    msg="Low range never occurred: may not be possible")
+        # Success case
+        return False

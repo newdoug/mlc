@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 
-set -e
-
 if [ "$DEBUG" = "1" ]; then
   set -x
 fi
 
 SCRIPTDIR="$(readlink -f "$(dirname "$0")")"
-TESTDIR="$SCRIPTDIR"
 SRCDIR="$(readlink -f "$SCRIPTDIR/../src")"
 
-cd "$TESTDIR/.." || exit 1
-
-PYTHONPATH="$PYTHONPATH:$SRCDIR" python3 -m unittest "$@"
+cd "$SRCDIR" || exit 1
+python3 -m data_gen "$@"
