@@ -2,11 +2,12 @@
 import os
 import unittest
 
-from utils import ASCII_RANGE, rand_int_in_range
+from data_gen.random_data import ASCII_RANGE, rand_int_in_range
 
 
 class TestRandIntInRange(unittest.TestCase):
     """`rand_int_in_range` function"""
+    # TODO: more tests: negative numbers?
 
     def _run_range_test(self, int_range, iterations: int = 1000):
         for iteration in range(iterations):

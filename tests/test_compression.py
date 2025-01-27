@@ -9,6 +9,7 @@ from compression import compress, CompressionType, decompress
 
 
 def _rand_data(length: Optional[int] = None) -> bytes:
+    """This has a default case unlike `rand_bytes` in `data_gen.random_data`"""
     if not length:
         length = struct.unpack("<H", os.urandom(2))[0] or 1
     return os.urandom(length)

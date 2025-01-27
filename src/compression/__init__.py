@@ -12,9 +12,9 @@ from typing import Callable, Dict, Optional, Tuple
 import zlib
 
 try:
-    from .utils import BetterEnum
+   from ..utils.better_enum import BetterEnum
 except (ImportError, ModuleNotFoundError):
-    from utils import BetterEnum
+    from utils.better_enum import BetterEnum
 
 
 __all__ = [

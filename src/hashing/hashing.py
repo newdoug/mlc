@@ -5,9 +5,9 @@ import hashlib
 from typing import Callable, Dict
 
 try:
-    from ..utils import BetterEnum
+    from ..utils.better_enum import BetterEnum
 except (ImportError, ModuleNotFoundError):
-    from utils import BetterEnum
+    from utils.better_enum import BetterEnum
 
 
 __all__ = [
