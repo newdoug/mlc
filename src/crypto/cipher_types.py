@@ -3,9 +3,9 @@
 from enum import auto
 
 try:
-    from ..utils import BetterEnum
+    from ..utils.better_enum import BetterEnum
 except (ImportError, ModuleNotFoundError):
-    from utils import BetterEnum
+    from utils.better_enum import BetterEnum
 
 
 class CipherType(BetterEnum):

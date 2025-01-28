@@ -5,4 +5,4 @@ if [ "$DEBUG" = "1" ]; then
 fi
 
 SCRIPTDIR="$(readlink -f "$(dirname "$0")")"
-"$SCRIPTDIR/run_mlc_module.sh" "data_gen" "$@" || exit 1
+"$SCRIPTDIR/run_mlc_module.sh" "models.train" "$@" || exit 1

@@ -117,6 +117,8 @@ class CompressionType(BetterEnum):
     TAR_XZ = auto()
 
 
+# Example code (dead, but left for future reference) showing delta compression
+# algorithm implementation
 DELTA_EX_CODE = """
 void delta_encode(unsigned char *buffer, int length)
 {

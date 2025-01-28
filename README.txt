@@ -15,6 +15,15 @@ ciphertext
 *** We likely should use different models and different feature selection methods for each thing we're attempting to guess
 
 
+Components:
+
+* Data generator
+* Feature calculator
+* Feature selection
+* Model trainer and tester
+* Classifier
+
+
 * Things to multiprocess/distibute processing of:
 ** Generate feature calculation
 ** Model training

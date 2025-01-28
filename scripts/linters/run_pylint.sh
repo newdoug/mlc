@@ -35,7 +35,7 @@ NUM_FILES=0
 FAILED_FILENAMES=()
 
 while read -r FILENAME; do
-  if ! "${PYLINT_CMD}" "$FILENAME"; then
+  if ! "${PYLINT_CMD}" --disable=fixme "$FILENAME"; then
     FAILED_FILENAMES+=("$FILENAME")
     ALL_PASSED=0
   fi

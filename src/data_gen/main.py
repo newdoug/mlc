@@ -12,47 +12,112 @@ import enum
 import multiprocessing
 import os
 import sys
-from typing import List
+from typing import Iterable, List
 
 try:
-    from .compression import CompressionType
-    from .crypto.types import CipherType
+    from .data_type_base import DataTypeSettingKey
+    from .random_data import RandomDataType, rand_int_in_range
+    from ..compression import compress, CompressionType
+    from ..crypto.cipher_types import CipherType
 except (ImportError, ModuleNotFoundError):
-    from compression import CompressionType
-    from crypto.types import CipherType
+    from compression import compress, CompressionType
+    from crypto.cipher_types import CipherType
+    from data_gen.data_type_base import DataTypeSettingKey
+    from data_gen.random_data import RandomDataType, rand_int_in_range
 
 
-def main(args: List[str]) -> int:
-    """main returns exit code"""
+def _get_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Generate plaintext and ciphertext data for test and "
                     "training data sets")
     parser.add_argument(
-        "data_type",
-        help="Type of data to randomly generate",
+        "--random-data",
+        help="Generate random data of lengths",
         nargs="+",
-        choices=DataType.values())
+        type=str,
+        choices=RandomDataType.names(),
+    )
     parser.add_argument(
-        "-c", "--compress",
+        "-n", "--num-samples",
+        help="Number of samples to generate",
+        type=int,
+    )
+    parser.add_argument(
+        "--size-range",
+        help="Range (in bytes) of lengths of generated data samples",
+        nargs=2,
+        type=int,
+    )
+    parser.add_argument(
+        "--compress",
         help="Whether or not to compress generated plaintexts and if so, "
              "what compression algorithm",
-        choices=CompressionType.values())
+        choices=CompressionType.names())
     parser.add_argument(
-        "-e", "--encrypt-algs",
-        help="Ciphers to use to encrypt data. If compression is enabled, "
+        "--cipher",
+        help="Cipher(s) to use to encrypt data. If compression is enabled, "
              "encryption takes place on the compressed data. If not, on the "
              "plaintext",
-        choices=CipherType.values(),
-        nargs="+")
-    # TODO: doesn't jive well with accepting multiple ciphers. Maybe accept
-    # "ALG-<KEY_SIZE>" (so probably not an enum for encrypt algs since that'd be
-    # quite a large list)
-    # parser.add_argument(
-    #     "--key-size",
-    #     help="Key size (in bits) to use for encryption",
-    #     type=int)
+        choices=CipherType.names(),
+        nargs="+",
+        default=[])
+    # Encryption arguments
+    parser.add_argument(
+        "--key-size",
+        help="Key size (in bits) to use for encryption",
+        type=int,
+        default=[])
+    return parser
+
+
+def _gen_plaintext_samples(num_samples: int,
+                           size_range: Tuple[int, int],
+                           data_type: RandomDataType) -> Iterable[bytes]:
+    for _ in range(num_samples):
+        length = rand_int_in_range(size_range[0], size_range[1])
+        yield data_type.generate({
+            DataTypeSettingKey.LENGTH.name: length,
+        })
+
+
+def _compress_samples(samples: Iterable[bytes],
+                      compression_type: CompressionType) -> Iterable[bytes]:
+    for sample in samples:
+        yield compress(sample, compression_type)
+
+
+def _encrypt_samples(samples: Iterable[bytes],
+                     cipher_type: CipherType,
+                     key_size_bits: int) -> Iterable[bytes]:
+    _encrypt_sample(sample, cipher_type, key_size_bits)
+
+
+def main(args: List[str]) -> int:
+    """main returns exit code"""
+
+    parser = _get_argparser()
     parsed_args = parser.parse_args(args)
 
+    # Some validation
+    if parsed_args.cipher or parsed_args.key_size:
+        if len(parsed_args.cipher) != len(parsed_args.key_size):
+            eprint("Number of ciphers must equal number of key sizes")
+            return 1
+
+    if parsed_args.random_data:
+        if not parsed_args.size_range:
+            eprint("Size range is required when generating random data")
+            return 1
+        if not parsed_args.num_samples or parsed_args.num_samples < 1:
+            eprint("Number of samples (must be positive) is required when "
+                   "generating random data")
+            return 1
+
+        for data_type in parsed_args.random_data:
+            _gen_plaintext_samples(
+                parsed_args.num_samples,
+                parsed_args.size_range,
+                RandomDataType(data_type))
     return 0
 
 

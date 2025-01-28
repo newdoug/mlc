@@ -21,12 +21,11 @@ class Crypter:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    # TODO: better interface: not all have IVs
-    def encrypt(self, data: bytes, iv: bytes) -> bytes:
+    def encrypt(self, data: bytes, settings: CipherSettings) -> bytes:
         """Encrypt data"""
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def decrypt(self, data: bytes, iv: bytes) -> bytes:
+    def decrypt(self, data: bytes, settings: CipherSettings) -> bytes:
         """Decrypt data"""
         raise NotImplementedError()
