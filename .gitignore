@@ -11,6 +11,9 @@ a.out
 *.dll
 *.exe
 *.elf
+*.json
+*.yaml
+*.yml
 
 *.sw[a-z]
 *.log

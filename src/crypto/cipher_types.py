@@ -12,7 +12,7 @@ class CipherType(BetterEnum):
     """Type of cipher to use"""
     # TODO: finish implementing these and testing these
     # TODO: more modes for AES: CTR, OFB, CFB, CFB8, XTS, ECB, CBC, GCM
-    # TODO: more! More asymmetricm more symmetric, more bit sizes, more modes
+    # TODO: More asymmetric, more symmetric, more bit sizes, more modes
     #       Including less well-known ones. Don't have to be limited to just
     #       cryptography library.
     # Key sizes (bits): 128, 256

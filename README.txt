@@ -24,7 +24,7 @@ Components:
 * Classifier
 
 
-* Things to multiprocess/distibute processing of:
+* Things to multiprocess/distribute processing of:
 ** Generate feature calculation
 ** Model training
 ** Everything, but for each thing we're trying to guess (e.g., one machine for one thing we're trying to guess (one machine for file type, one machine for cipher type, etc.), but probably more than 1 machine for each if we're getting serious).
