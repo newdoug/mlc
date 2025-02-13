@@ -215,7 +215,6 @@ Ideas:
 
 # TODO
 
-* Move tests/ out of src/
 * More comprehensive unit tests
 ** More unit tests in general - some things aren't unit tested at all
 * More algorithms to finish implementing
@@ -225,4 +224,19 @@ Ideas:
 * Define `__all__` more consistently for everyone
 * Run linters and resolve issues
 * CI/CD - run tests in GH job(s)?
-* Distrubute processing across actual nodes (AWS, etc.)
+* Distribute processing across actual nodes (AWS, etc.)
+
+* Feedback back into itself?
+** If it can, with reasonable confidence, determine part of a ciphertext to be
+some plaintext, then use that info to try to determine the rest and add that
+learning to the model.
+* Learn with keys too. E.g., use key attributes/features as part of the learning
+  model. May be able to determine certain sets of bits of the key at least.
+* Does every bit of input affect every bit of output? To what degree? If not, then we can brute force only certain bits (with known plaintext).
+  * Initial interpretation of this quesiton: Bit of plaintext (input) vs bit of
+    ciphertext (output).
+  * Another interpretation: Bit of key vs bit of output. Bit of output could be:
+    entire ciphertext? Or a single block (in the case of block ciphers) or bit
+    of something else for stream ciphers?
+* Make linters as git precommit hooks
+  * Other precommit hooks? Can probably use some precommit library if desired.
