@@ -122,12 +122,12 @@ def _set_up_logger(use_stdout: bool = True,
 
     if use_syslog:
         platform = sys.platform.lower()
+        handler = None
         if platform.endswith("nux") or platform.endswith("nix"):
-            handler = logging.handlers.SysLogHandler(address="/dev/log")
+            if hasattr(logging.handlers, "SysLogHandler"):
+                handler = logging.handlers.SysLogHandler(address="/dev/log")
         elif hasattr(logging.handlers, "NTEventLogHandler"):
             handler = logging.handlers.NTEventLogHandler(logger_name)
-        else:
-            handler = None
 
         if handler:
             handler.setFormatter(formatter)

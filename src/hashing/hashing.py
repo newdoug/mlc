@@ -52,6 +52,8 @@ class HashType(BetterEnum):
 
 
 def _make_std_hashlib_hash_func(hash_class) -> Callable[[bytes], bytes]:
+    # This is how most hashes (not *all*) from hashlib work
+    # Certain blake ones are different as well as KDF-type ones
     return lambda data: hash_class(data).digest()
 
 

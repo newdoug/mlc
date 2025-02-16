@@ -77,6 +77,26 @@ Components:
 ** Common file types - see below
 *** Likely need to borrow some from other sources and may need to worry about copyright stuff?
 *** Some will require large amounts of storage, like videos
+* NOTE: maybe do something extremely similar, but just on the plaintext.
+  Basically the whole process including good feature determination. At lesat a
+  couple of reasons:
+  * If the ML model learns what things about the plaintext are important, then
+    maybe the same or similar (possibly just shifted or maybe some linear or
+    noticeable transformation) would apply to the ciphertext somehow.
+      * TODO: some way to automate detecting this? Imagine what a human might do
+        when looking at it and trying to find similarities.
+        * If even one case turns up, could break the crypto.
+  * Could be a useful enough application by itself.
+    * Could easily turn it into a website (don't keep data stored in case it's
+      something illegal) with ads or some other monetization scheme - make some money.
+    * If developing it, running "strings" on input and taking note and/or
+      existance of strings and ocation(s) would be useful.
+      * Keeping track of certain portions of files would probably be useful too.
+        Especially first few bytes (where magic numbers/strings/values usually
+        are). Magic elsewhere (in sub-structures, for example) wouldn't be as
+        easily.
+      * binwalk that recursively finds stuff may primarily look for magic. How
+        would that work here?
 
 * Maybe turn certain things or everything into services so that we can constantly be generating and/or obtaining data and running it trough the pipeline to other steps and constantly improving the model.
 ** Being able to use the model for classification while submitting training data?
