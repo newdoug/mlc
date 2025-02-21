@@ -19,6 +19,8 @@ class DataTypeSettingKey(BetterEnum):
     """Common settings for data type generation.
     Values are keys in a dict.
     """
+    CSV_NUM_ROWS = auto()
+    JSON_DEPTH = auto()
     LENGTH = auto()
     SPARSE_PERCENT = auto()
     SPARSE_BYTE = auto()

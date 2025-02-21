@@ -4,7 +4,7 @@ import json
 from typing import Union
 
 try:
-    from .random_data import (
+    from ..random_data import (
         rand_ascii_str,
         rand_element_in_list,
         rand_float,
