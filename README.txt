@@ -260,3 +260,30 @@ learning to the model.
     of something else for stream ciphers?
 * Make linters as git precommit hooks
   * Other precommit hooks? Can probably use some precommit library if desired.
+
+* See how audio matching machine learning/matching works. Find patterns in
+  waveform and matches them up with input test signal? Could be useful for
+  feature creation and/or pattern determination on ciphertexts.
+* Add an "auto-break" flag once it hsa a guess at what the input looks like. If
+  the result is some kind of cipher. If it's some breakable cipher like shift,
+  Caesar, substitution, etc., it'll be easy, otherwise, probably just brute
+  force unless we come up with full crypto breaking methods for that cipher
+  (i.e., not just brute force).
+* Identify test (SMS) messages. Emojis? Acronyms used in texting Text message
+  "format" e.g. how they may be stored on phones with a header and/or footer or
+  how they're sent over the air with header or footer.
+* Identify if it's an over-the-air message? Psk encoding identification? Common footers and headers? 
+* Identify packet formats. Ethernet, tcp, ftp, udp, IP, etc. 
+* Turn the jobs thing from mlc into generic multi-processing ability. Kinda already done. 
+* Make the jobs thing support multiple communication methods. Tcp socket, udp socket, SSH, Unix socket, something more inter-process specific, etc. 
+* Try to identify more complex meanings behind tars/archives. This can mean at least 2 things:
+  1) "the contents of this tar looks like a got repo" or something similar 
+  2) "this exact file is available here: *some Internet link*" or "this exact file is available on this website somewhere: *some website name and/or link" or "a very similar file (maybe show/offer a diff if possible and available) is available here: *some link or site name*" (that one sounds a bit difficult and would probably take a ton of processing - would need to keep track of all files we've seen and metadata about it and then compare each of them to this one were currently inspecting - begs the idea of a service with background tasks/sub services/jobs running and sending notifications in some way to the user), or "this archive contains a git repo (commit XXXX if possible) that's from here: *repo link (GitHub, gitlab, bitbucket, another site, etc.)*"
+
+
+
+Permute actual code pulled from GitHub or something using lexer/parser to come up with variations of algorithms and see if any produce any keys or partial keys or offsets of keys or something at all related to a key 
+Permuting C/c++ and assembly. 
+Start with something similar to the actual algorithm. 
+Also try bad transformations to see if anything easy somehow works 
+Aes, chacha20, rsa, etc. 
