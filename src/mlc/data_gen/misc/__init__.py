@@ -3,12 +3,8 @@
 from base64 import b64encode
 from enum import auto
 
-try:
-    from .random_data import rand_json_str
-    from ..data_type_base import DataTypeBase, DataTypeSettingKey
-except (ImportError, ModuleNotFoundError):
-    from data_gen.data_type_base import DataTypeBase, DataTypeSettingKey
-    from data_gen.misc.json_generator import rand_json_str
+from mlc.data_gen.data_type_base import DataTypeBase, DataTypeSettingKey
+from mlc.data_gen.misc.json_generator import rand_json_str
 
 
 __all__ = [

@@ -3,10 +3,7 @@
 from enum import auto
 from typing import Optional
 
-try:
-    from ..utils.better_enum import BetterEnum
-except (ImportError, ModuleNotFoundError):
-    from utils.better_enum import BetterEnum
+from mlc.utils.better_enum import BetterEnum
 
 
 class DataTypeBase(BetterEnum):

@@ -5,10 +5,7 @@ import os
 import struct
 from typing import Any
 
-try:
-    from .data_type_base import DataTypeBase, DataTypeSettingKey
-except (ImportError, ModuleNotFoundError):
-    from data_gen.data_type_base import DataTypeBase, DataTypeSettingKey
+from mlc.data_gen.data_type_base import DataTypeBase, DataTypeSettingKey
 
 
 __all__ = [

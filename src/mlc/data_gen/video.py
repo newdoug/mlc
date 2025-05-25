@@ -2,10 +2,7 @@
 
 from enum import auto
 
-try:
-    from .data_type_base import DataTypeBase
-except (ImportError, ModuleNotFoundError):
-    from data_gen.data_type_base import DataTypeBase
+from mlc.data_gen.data_type_base import DataTypeBase
 
 
 class VideoDataType(DataTypeBase):

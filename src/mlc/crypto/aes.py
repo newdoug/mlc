@@ -1,8 +1,8 @@
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-from .crypter import Crypter
-from .settings import CipherInputSettings
+from mlc.crypto.crypter import Crypter
+from mlc.crypto.settings import CipherInputSettings
 
 
 class AesCbcCrypt(Crypter):

@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from data_gen.misc.csv_generator import (
+from mlc.data_gen.misc.csv_generator import (
     DEFAULT_CSV_LINE_ENDING,
     generate_random_csv_data,
     generate_random_csv_header,
@@ -24,5 +24,6 @@ class TestGenerateRandomCsvData(unittest.TestCase):
             with open(csv_file.name, "r", encoding="UTF-8") as handle:
                 reader = csv.reader(handle)
                 for row in reader:
+                    # TODO
+                    pass
         csv_data.split(DEFAULT_CSV_LINE_ENDING)
-

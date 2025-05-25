@@ -4,10 +4,9 @@ from enum import auto
 import hashlib
 from typing import Callable, Dict
 
-try:
-    from ..utils.better_enum import BetterEnum
-except (ImportError, ModuleNotFoundError):
-    from utils.better_enum import BetterEnum
+from Crypto.Hash import MD2
+
+from mlc.utils.better_enum import BetterEnum
 
 
 __all__ = [
@@ -19,9 +18,9 @@ __all__ = [
 
 class HashType(BetterEnum):
     """Type of (unkeyed) hash algorithm"""
-    # MD2 = auto()
+    MD2 = auto()
     # MD3??
-    # Md4 = auto()
+    # MD4 = auto()
     MD5 = auto()
     # MD6 = auto()
     SHA1 = auto()
@@ -51,6 +50,11 @@ class HashType(BetterEnum):
 # Will probably need other libraries or to implement them ourself
 
 
+def md2(data: bytes) -> str:
+    h = MD2.new()
+    h.update(data)
+    return h.digest()
+
 def _make_std_hashlib_hash_func(hash_class) -> Callable[[bytes], bytes]:
     # This is how most hashes (not *all*) from hashlib work
     # Certain blake ones are different as well as KDF-type ones
@@ -58,6 +62,7 @@ def _make_std_hashlib_hash_func(hash_class) -> Callable[[bytes], bytes]:
 
 
 HASH_TYPE_TO_FUNC: Dict[HashType, Callable[[bytes], bytes]] = {
+    HashType.MD2: md2,
     HashType.MD5: _make_std_hashlib_hash_func(hashlib.md5),
     HashType.SHA1: _make_std_hashlib_hash_func(hashlib.sha1),
     HashType.SHA224: _make_std_hashlib_hash_func(hashlib.sha224),

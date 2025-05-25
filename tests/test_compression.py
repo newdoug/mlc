@@ -4,8 +4,7 @@ import struct
 from typing import Optional
 import unittest
 
-# TODO: proper way to handle unittest files for pylint?
-from compression import compress, CompressionType, decompress
+from mlc.compression import compress, CompressionType, decompress
 
 
 def _rand_data(length: Optional[int] = None) -> bytes:

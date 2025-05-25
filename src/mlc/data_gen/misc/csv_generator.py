@@ -3,22 +3,13 @@
 import shlex
 from typing import List, Optional, Tuple
 
-try:
-    from ..random_data import (
-        rand_ascii_str,
-        rand_element_in_list,
-        rand_float,
-        rand_int_in_range,
-        rand_uint32,
-    )
-except (ImportError, ModuleNotFoundError):
-    from data_gen.random_data import (
-        rand_ascii_str,
-        rand_element_in_list,
-        rand_float,
-        rand_int_in_range,
-        rand_uint32,
-    )
+from mlc.data_gen.random_data import (
+    rand_ascii_str,
+    rand_element_in_list,
+    rand_float,
+    rand_int_in_range,
+    rand_uint32,
+)
 
 
 DEFAULT_CSV_NUM_COLS: int = 8

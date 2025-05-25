@@ -2,7 +2,7 @@
 import os
 import unittest
 
-from data_gen.random_data import ASCII_RANGE, rand_int_in_range
+from mlc.data_gen.random_data import ASCII_RANGE, rand_int_in_range
 
 
 class TestRandIntInRange(unittest.TestCase):

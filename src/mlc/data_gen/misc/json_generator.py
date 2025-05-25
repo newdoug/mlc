@@ -3,22 +3,13 @@
 import json
 from typing import Union
 
-try:
-    from ..random_data import (
-        rand_ascii_str,
-        rand_element_in_list,
-        rand_float,
-        rand_int_in_range,
-        rand_int64,
-    )
-except (ImportError, ModuleNotFoundError):
-    from data_gen.random_data import (
-        rand_ascii_str,
-        rand_element_in_list,
-        rand_float,
-        rand_int_in_range,
-        rand_int64,
-    )
+from mlc.data_gen.random_data import (
+    rand_ascii_str,
+    rand_element_in_list,
+    rand_float,
+    rand_int_in_range,
+    rand_int64,
+)
 
 
 __all__ = [

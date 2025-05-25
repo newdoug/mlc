@@ -14,16 +14,10 @@ import os
 import sys
 from typing import Iterable, List
 
-try:
-    from .data_type_base import DataTypeSettingKey
-    from .random_data import RandomDataType, rand_int_in_range
-    from ..compression import compress, CompressionType
-    from ..crypto.cipher_types import CipherType
-except (ImportError, ModuleNotFoundError):
-    from compression import compress, CompressionType
-    from crypto.cipher_types import CipherType
-    from data_gen.data_type_base import DataTypeSettingKey
-    from data_gen.random_data import RandomDataType, rand_int_in_range
+from mlc.data_gen.data_type_base import DataTypeSettingKey
+from mlc.data_gen.random_data import RandomDataType, rand_int_in_range
+from mlc.compression import compress, CompressionType
+from mlc.crypto.cipher_types import CipherType
 
 
 def _get_argparser() -> argparse.ArgumentParser:

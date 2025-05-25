@@ -6,10 +6,7 @@ from dataclasses import dataclass
 from enum import auto
 from typing import Callable, Dict
 
-try:
-    from ..utils import BetterEnum
-except (ImportError, ModuleNotFoundError):
-    from utils import BetterEnum
+from mlc.utils import BetterEnum
 
 
 class CrcType(BetterEnum):

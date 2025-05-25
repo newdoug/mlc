@@ -3,7 +3,7 @@ import os
 from typing import Union
 import unittest
 
-from hashing.hashing import hash_data, HashType as HT
+from mlc.hashing.hashing import hash_data, HashType as HT
 
 
 class TestHashData(unittest.TestCase):
@@ -133,3 +133,12 @@ class TestHashData(unittest.TestCase):
     def test_sha3_512_random(self):
         """SHA3_512 test on more random samples"""
         self._comp_test(HT.SHA3_512, 512 // 8)
+
+    def test_md2_basic(self):
+        """Basic MD2 test"""
+        self._sim_test(HT.MD2, b"The quick brown fox jumps over the lazy dog",
+                       "03d85a0d629d2c442e987525319fc471")
+
+    def test_md2_random(self):
+        """MD2 test on more random samples"""
+        self._comp_test(HT.MD2, 16)

@@ -11,10 +11,7 @@ import tempfile
 from typing import Callable, Dict, Optional, Tuple
 import zlib
 
-try:
-   from ..utils.better_enum import BetterEnum
-except (ImportError, ModuleNotFoundError):
-    from utils.better_enum import BetterEnum
+from mlc.utils.better_enum import BetterEnum
 
 
 __all__ = [
