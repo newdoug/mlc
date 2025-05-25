@@ -4,7 +4,7 @@ from enum import auto
 import hashlib
 from typing import Callable, Dict
 
-from Crypto.Hash import MD2
+from Crypto.Hash import MD2, MD4
 
 from mlc.utils.better_enum import BetterEnum
 
@@ -20,7 +20,7 @@ class HashType(BetterEnum):
     """Type of (unkeyed) hash algorithm"""
     MD2 = auto()
     # MD3??
-    # MD4 = auto()
+    MD4 = auto()
     MD5 = auto()
     # MD6 = auto()
     SHA1 = auto()
@@ -55,6 +55,13 @@ def md2(data: bytes) -> str:
     h.update(data)
     return h.digest()
 
+
+def md4(data: bytes) -> str:
+    h = MD4.new()
+    h.update(data)
+    return h.digest()
+
+
 def _make_std_hashlib_hash_func(hash_class) -> Callable[[bytes], bytes]:
     # This is how most hashes (not *all*) from hashlib work
     # Certain blake ones are different as well as KDF-type ones
@@ -63,6 +70,7 @@ def _make_std_hashlib_hash_func(hash_class) -> Callable[[bytes], bytes]:
 
 HASH_TYPE_TO_FUNC: Dict[HashType, Callable[[bytes], bytes]] = {
     HashType.MD2: md2,
+    HashType.MD4: md4,
     HashType.MD5: _make_std_hashlib_hash_func(hashlib.md5),
     HashType.SHA1: _make_std_hashlib_hash_func(hashlib.sha1),
     HashType.SHA224: _make_std_hashlib_hash_func(hashlib.sha224),

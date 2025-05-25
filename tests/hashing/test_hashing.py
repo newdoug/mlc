@@ -142,3 +142,12 @@ class TestHashData(unittest.TestCase):
     def test_md2_random(self):
         """MD2 test on more random samples"""
         self._comp_test(HT.MD2, 16)
+
+    def test_md4_basic(self):
+        """Basic MD4 test"""
+        self._sim_test(HT.MD4, b"The quick brown fox jumps over the lazy dog",
+                       "1bee69a46ba811185c194762abaeae90")
+
+    def test_md4_random(self):
+        """MD4 test on more random samples"""
+        self._comp_test(HT.MD4, 16)
