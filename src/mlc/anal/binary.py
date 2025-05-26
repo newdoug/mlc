@@ -1,3 +1,8 @@
+from typing import Callable
+
+
+def _bin(byte: int) -> str:
+    return "{:08b}".format(byte)
 
 
 def average_byte(data: bytes) -> float:
@@ -18,11 +23,11 @@ def most_common_byte(data: bytes) -> int:
 
 
 def average_num_bits_on(data: bytes) -> float:
-    return sum(bin(byte)[2:].count("1") for byte in data) / len(data)
+    return sum(_bin(byte).count("1") for byte in data) / len(data)
 
 
 def average_num_bits_off(data: bytes) -> float:
-    return sum(bin(byte)[2:].count("0") for byte in data) / len(data)
+    return sum(_bin(byte).count("0") for byte in data) / len(data)
 
 
 def percent_bytes_with_bit_x_on(data: bytes, bit: int) -> float:
@@ -37,10 +42,143 @@ def percent_bytes_with_bit_x_off(data: bytes, bit: int) -> float:
     return 100.0 * len([byte for byte in data if byte & bit == 0]) / len(data)
 
 
-print(most_common_byte(b"aaaaaaac"))
-print(average_num_bits_on(b"\x00\x00\x01"))
-for bit in range(0, 8):
-    print(percent_bytes_with_bit_x_on(b"\xFF\xFF\xFF", bit))
-    print(percent_bytes_with_bit_x_off(b"\xFF\xFF\xFF", bit))
-print(percent_bytes_with_bit_x_on(b"\xFF\xF0\xF1", 0))
-# print(average_num_bits_on(b"\x00\x00\x00"))
+def nib1(byte: int) -> int:
+    return byte & 0x0F
+
+
+def nib2(byte: int) -> int:
+    return (byte & 0xF0) >> 4
+
+
+def percent_bytes_first_nibble_gt_second_nibble(data: bytes) -> float:
+    return 100.0 * sum([1 for byte in data if nib1(byte) > nib2(byte)]) / len(data) 
+
+
+def percent_bytes_first_nibble_ge_second_nibble(data: bytes) -> float:
+    return 100.0 * sum([1 for byte in data if nib1(byte) >= nib2(byte)]) / len(data) 
+
+
+def percent_bytes_first_nibble_lt_second_nibble(data: bytes) -> float:
+    return 100.0 * sum([1 for byte in data if nib1(byte) < nib2(byte)]) / len(data) 
+
+
+def percent_bytes_first_nibble_le_second_nibble(data: bytes) -> float:
+    return 100.0 * sum([1 for byte in data if nib1(byte) <= nib2(byte)]) / len(data) 
+
+
+def percent_bytes_first_nibble_eq_second_nibble(data: bytes) -> float:
+    return 100.0 * sum([1 for byte in data if nib1(byte) == nib2(byte)]) / len(data) 
+
+
+def percent_bytes_first_nibble_eq_complement_of_second_nibble(data: bytes) -> float:
+    return 100.0 * sum([1 for byte in data if nib1(byte) == ~nib2(byte)]) / len(data) 
+
+
+def _mirror(byte: int) -> int:
+    # bit-reverse input int (range [0, 255])
+    return int("{:08b}".format(byte)[::-1], 2)
+
+
+def percent_bytes_first_nibble_eq_mirror_of_second_nibble(data: bytes) -> float:
+    return 100.0 * sum([1 for byte in data if nib1(byte) == _mirror(nib2(byte))]) / len(data) 
+
+
+percent_bytes_with_bit_0_on = lambda data: percent_bytes_with_bit_x_on(data, 0)
+percent_bytes_with_bit_1_on = lambda data: percent_bytes_with_bit_x_on(data, 1)
+percent_bytes_with_bit_2_on = lambda data: percent_bytes_with_bit_x_on(data, 2)
+percent_bytes_with_bit_3_on = lambda data: percent_bytes_with_bit_x_on(data, 3)
+percent_bytes_with_bit_4_on = lambda data: percent_bytes_with_bit_x_on(data, 4)
+percent_bytes_with_bit_5_on = lambda data: percent_bytes_with_bit_x_on(data, 5)
+percent_bytes_with_bit_6_on = lambda data: percent_bytes_with_bit_x_on(data, 6)
+percent_bytes_with_bit_7_on = lambda data: percent_bytes_with_bit_x_on(data, 7)
+percent_bytes_with_bit_0_off = lambda data: percent_bytes_with_bit_x_off(data, 0)
+percent_bytes_with_bit_1_off = lambda data: percent_bytes_with_bit_x_off(data, 1)
+percent_bytes_with_bit_2_off = lambda data: percent_bytes_with_bit_x_off(data, 2)
+percent_bytes_with_bit_3_off = lambda data: percent_bytes_with_bit_x_off(data, 3)
+percent_bytes_with_bit_4_off = lambda data: percent_bytes_with_bit_x_off(data, 4)
+percent_bytes_with_bit_5_off = lambda data: percent_bytes_with_bit_x_off(data, 5)
+percent_bytes_with_bit_6_off = lambda data: percent_bytes_with_bit_x_off(data, 6)
+percent_bytes_with_bit_7_off = lambda data: percent_bytes_with_bit_x_off(data, 7)
+
+
+def _percent_op_next_byte(data: bytes, op: Callable) -> float:
+    if len(data) < 2:
+        return 0.0
+    occ = 0
+    for idx in range(0, len(data) - 1):
+        if op(ata[idx], data[idx + 1]):
+            occ += 1
+    return 100.0 * occ / (len(data) - 1)
+
+
+def _lt_op(byte1: int, byte2: int) -> bool:
+    return byte1 < byte2
+
+
+def _le_op(byte1: int, byte2: int) -> bool:
+    return byte1 <= byte2
+
+
+def _gt_op(byte1: int, byte2: int) -> bool:
+    return byte1 > byte2
+
+
+def _ge_op(byte1: int, byte2: int) -> bool:
+    return byte1 >= byte2
+
+
+def _eq_op(byte1: int, byte2: int) -> bool:
+    return byte1 == byte2
+
+
+def percent_bytes_lt_next_byte(data: bytes) -> float:
+    return _percent_op_next_byte(data, _lt_op)
+
+
+def percent_bytes_le_next_byte(data: bytes) -> float:
+    return _percent_op_next_byte(data, _le_op)
+
+
+def percent_bytes_gt_next_byte(data: bytes) -> float:
+    return _percent_op_next_byte(data, _gt_op)
+
+
+def percent_bytes_ge_next_byte(data: bytes) -> float:
+    return _percent_op_next_byte(data, _ge_op)
+
+
+def percent_bytes_eq_next_byte(data: bytes) -> float:
+    return _percent_op_next_byte(data, _eq_op)
+
+
+def _set_up_percent_bytes_with_bits_funcs():
+    for bit_len in range(1, 9):
+        for patt in range(0, 2 ** bit_len):
+            patt = ("{:0" + str(bit_len) + "b}").format(patt)
+            func_name = f"percent_of_bytes_with_bits_{patt}"
+            globals()[func_name] = lambda data: 100.0 * sum([1 for byte in data if patt in _bin(byte)]) / len(data)
+
+
+_set_up_percent_bytes_with_bits_funcs()
+
+
+def _set_up_percent_bytes_gt_funcs():
+    for num in range(1, 255):
+        func_name = f"percent_of_bytes_gt_{num}"
+        globals()[func_name] = lambda data: 100.0 * sum([1 for byte in data if
+                                                         byte > num]) / len(data)
+
+
+_set_up_percent_bytes_gt_funcs()
+
+
+def average_max_per_block(data: bytes, block_size_bytes: 8) -> float:
+    # TODO: unit test
+    # TODO: same for min
+    # TODO: same for max - min
+    max_sums = 0
+    for idx in range(0, len(data) - block_size_bytes, block_size_bytes):
+        block = data[idx, idx + block_size_bytes]
+        max_sums += max(block)
+    return max_sums / (len(data) // block_size_bytes)
+
