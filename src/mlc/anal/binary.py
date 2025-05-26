@@ -182,3 +182,19 @@ def average_max_per_block(data: bytes, block_size_bytes: 8) -> float:
         max_sums += max(block)
     return max_sums / (len(data) // block_size_bytes)
 
+
+# TODO: track occurrences and frequencies of all byte strings <= length 5? 4? 8?
+# TODO: detect clusters of bytes that are close to each other in value? E.g.
+# \xAB\x29\x63\x66\x62\x5F\x72 might trigger "bytes '\x63\x66\x62\x5F'
+# adjacent bytes were close in value (like a cluster).
+#   - Maybe a clustering algorithm?
+# TODO: perform various transformations on the data (linear, non-linear, steps
+# of AES, etc.) and then perform binary analysis on that too.
+# TODO: track if any correlations between plaintext and ciphertext exist? What
+# about between plaintext and transformed ciphertext? What about between
+# ciphertext and transformed plaintext? What about between transformed plaintext
+# and transformed ciphertext?
+# TODO: use various transformations (probably pieces of AES) on blocks/plaintext/ciphertext using just
+# piece of known key and compare those transformations with other values?
+# Plaintext? Ciphertext? Single blocks of plaintext? Single blocks of
+# ciphertext? Transformed ciphertext? Etc.
