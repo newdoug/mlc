@@ -10,6 +10,7 @@ class SimpleJob:
     state or connections required. More complex job management may be
     implemented and supported in the future.
     """
+
     name: str
 
     def run(self, settings: dict) -> dict:
@@ -17,7 +18,6 @@ class SimpleJob:
         if settings:
             raise NotImplementedError("No job implementation")
         return {}
-
 
 
 class JobReceiver:
@@ -38,4 +38,4 @@ class JobReceiver:
         pass
 
     def receive_settings(self) -> dict:
-        """Receive message
+        """Receive message"""
