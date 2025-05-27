@@ -1,6 +1,7 @@
 from collections import Counter
 from dataclasses import dataclass
 from functools import lru_cache
+import math
 import subprocess
 import tempfile
 from typing import Callable
@@ -18,6 +19,11 @@ def mark(f: Callable) -> Callable:
 def set_default_block_size(block_size_bytes: int) -> int:
     global DEFAULT_BLOCK_SIZE_BYTES
     DEFAULT_BLOCK_SIZE_BYTES = block_size_bytes
+
+
+def blocks(data: bytes, block_size_bytes: int) -> list[bytes]:
+    for idx in range(0, len(data) - block_size_bytes, block_size_bytes):
+        yield data[idx, idx + block_size_bytes]
 
 
 def _bin(byte: int) -> str:
@@ -247,11 +253,28 @@ def _set_up_percent_bytes_gt_funcs():
 _set_up_percent_bytes_gt_funcs()
 
 
+def _set_up_percent_freq_each_byte_funcs():
+    for num in range(0, 256):
+        func_name = f"percent_of_bytes_eq_{num}"
+        globals()[func_name] = mark(lambda data: 100.0 * data.count(num) / len(data))
+
+
+_set_up_percent_freq_each_byte_funcs()
+
+
+def _set_up_percent_of_blocks_with_byte_in_pos_funcs(pos: int, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES):
+    for num in range(0, 256):
+        func_name = f"percent_of_blocks_idx_{pos}_eq_{num}"
+        globals()[func_name] = mark(lambda data: 100.0 * len([block for block in blocks(data) if block[pos] == num]) /
+                                    (len(data) / block_size_bytes))
+
+
+for pos in range(DEFAULT_BLOCK_SIZE_BYTES):
+    _set_up_percent_of_blocks_with_byte_in_pos_funcs(pos, block_size_bytes=DEFAULT_BLOCK_SIZE_BYTES)
+
+
 def _average_block_op(data: bytes, op: Callable, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
-    sums = 0
-    for idx in range(0, len(data) - block_size_bytes, block_size_bytes):
-        block = data[idx, idx + block_size_bytes]
-        sums += op(block)
+    sums = sum(op(block) for block in blocks(data, block_size_bytes))
     return sums / (len(data) // block_size_bytes)
 
 
@@ -276,6 +299,19 @@ def average_block_max_minus_min(data: bytes, block_size_bytes: int = DEFAULT_BLO
 def calc_entropy(data: bytes) -> float:
     freq = Counter(data)
     return -sum((c / len(data)) * math.log2(c / len(data)) for c in freq.values())
+
+
+@mark
+def calc_chi_square(data: bytes) -> float:
+    expected = len(data) / 256  # Expected frequency for uniform distribution
+    freq = Counter(data)
+
+    chi2 = 0.0
+    for byte_val in range(256):
+        observed = freq.get(byte_val, 0)
+        chi2 += ((observed - expected) ** 2) / expected
+
+    return chi2
 
 
 @dataclass
@@ -328,6 +364,45 @@ def ent_serial_correlation(data: bytes) -> float:
     return run_ent(data).serial_correlation
 
 
+@mark
+def ent_entropy_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+    block_vals = [run_ent(block).entropy for block in blocks(data, block_size_bytes=block_size_bytes)]
+    return sum(block_vals) / len(block_vals)
+
+
+@mark
+def ent_chi_square_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+    block_vals = [run_ent(block).chi_square for block in blocks(data, block_size_bytes=block_size_bytes)]
+    return sum(block_vals) / len(block_vals)
+
+
+@mark
+def ent_monte_carlo_pi_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+    block_vals = [run_ent(block).monte_carlo_pi for block in blocks(data, block_size_bytes=block_size_bytes)]
+    return sum(block_vals) / len(block_vals)
+
+
+@mark
+def ent_serial_correlation_bkock_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+    block_vals = [run_ent(block).serial_correlation for block in blocks(data, block_size_bytes=block_size_bytes)]
+    return sum(block_vals) / len(block_vals)
+
+
+def bits_on_indices(byte: int) -> list[int]:
+    byte = _bin(byte)[::-1]
+    return [i for i in range(len(byte)) if byte[i] == "1"]
+
+
+@mark
+def average_on_bit_position_8bits(data: bytes) -> float:
+    # TODO: unit test
+    # TODO: 4 bits, 16 bits
+    total_sum = 0
+    for byte in data:
+        on = bits_on_indices(byte)
+        total_sum += sum(on)
+    return total_sum / (len(data) * 8)
+
 
 # TODO: track occurrences and frequencies of all byte strings <= length 5? 4? 8?
 # TODO: detect clusters of bytes that are close to each other in value? E.g.
@@ -344,15 +419,8 @@ def ent_serial_correlation(data: bytes) -> float:
 # piece of known key and compare those transformations with other values?
 # Plaintext? Ciphertext? Single blocks of plaintext? Single blocks of
 # ciphertext? Transformed ciphertext? Etc.
-# TODO: Average bit position (4, 8, and 16 bits)
 # TODO: most common bit position (4, 8, and 16 bits)
-# TODO: entropy
-# TODO: Average entropy of each block
-# TODO: chi-square
-# TODO: see ent program
 # TODO: basic frequency of each byte. Of each 16 bits?
-# TODO: percent of blocks that start with byte X
-# TODO: percent of blocks that end with byte X
 # TODO: similar functions, but on nibbles level
 # TODO: similar functions, but on 16-bit level
 # TODO: similar functions, but per block and between each possible pair of bytes in an 8-byte block
@@ -370,3 +438,5 @@ def get_analysis_funcs() -> dict[str, Callable]:
 
 
 ANAL_FUNCS = get_analysis_funcs()
+print(ANAL_FUNCS)
+print(len(ANAL_FUNCS))
