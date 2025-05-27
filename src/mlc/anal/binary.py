@@ -355,6 +355,11 @@ def calc_chi_square(data: bytes) -> float:
     return chi2
 
 
+@mark
+def calc_chi_square_normalized(data: bytes) -> float:
+    return calc_chi_square(data) / len(data)
+
+
 @dataclass
 class EntResults:
     """Useful outputs of `ent -t <filename>`"""
@@ -394,6 +399,11 @@ def ent_entropy(data: bytes) -> float:
 @mark
 def ent_chi_square(data: bytes) -> float:
     return run_ent(data).chi_square
+
+
+@mark
+def ent_chi_square_normalized(data: bytes) -> float:
+    return run_ent(data).chi_square / len(data)
 
 
 @mark
