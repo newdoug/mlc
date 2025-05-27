@@ -7,6 +7,7 @@ from mlc.data_gen.data_type_base import DataTypeBase
 
 class AudioDataType(DataTypeBase):
     """Audio data types/formats"""
+
     MP3 = auto()
     FLAC = auto()
     WAV = auto()

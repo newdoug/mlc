@@ -25,8 +25,10 @@ def _to_tar_data(data: bytes, open_flags: str = "w") -> bytes:
     """tars up `data` and returns the tar contents.
     Supports both uncompressed and compressed based on `open_flags`
     """
-    with (tempfile.NamedTemporaryFile() as raw_content_file,
-          tempfile.NamedTemporaryFile() as file_tarred):
+    with (
+        tempfile.NamedTemporaryFile() as raw_content_file,
+        tempfile.NamedTemporaryFile() as file_tarred,
+    ):
         raw_content_file.write(data)
         raw_content_file.flush()
         with tarfile.open(file_tarred.name, mode=open_flags) as tar_file:
@@ -44,8 +46,10 @@ def _from_tar_data(data: bytes, open_flags: str = "r") -> bytes:
     untarred_data = b""
     # This function is only a bit convoluted due to `tarfile` API pretty much
     # just doing this on files
-    with (tempfile.NamedTemporaryFile() as raw_content_file,
-          tempfile.TemporaryDirectory() as extract_dir):
+    with (
+        tempfile.NamedTemporaryFile() as raw_content_file,
+        tempfile.TemporaryDirectory() as extract_dir,
+    ):
         # Dump the binary tarfile contents to a temporary file
         raw_content_file.write(data)
         raw_content_file.flush()
@@ -81,6 +85,7 @@ _from_tar_xz = lambda data: _from_tar_data(data, "r:xz")
 
 class CompressionType(BetterEnum):
     """Type of compression algorithm"""
+
     # pylint: disable=too-few-public-methods
     GZIP = auto()
     # TODO
@@ -144,10 +149,13 @@ void delta_decode(unsigned char *buffer, int length)
 # Compress function, decompress function, compression level kwarg name, max
 # compression level value
 TYPE_TO_FUNCS: Dict[CompressionType, Tuple[Callable, Callable, str, int]] = {
-    CompressionType.GZIP: (gzip.compress, gzip.decompress, "compresslevel",
-        9),
-    CompressionType.LZMA: (lzma.compress, lzma.decompress, "preset",
-        9 | lzma.PRESET_EXTREME),
+    CompressionType.GZIP: (gzip.compress, gzip.decompress, "compresslevel", 9),
+    CompressionType.LZMA: (
+        lzma.compress,
+        lzma.decompress,
+        "preset",
+        9 | lzma.PRESET_EXTREME,
+    ),
     CompressionType.BZ2: (bz2.compress, bz2.decompress, "compresslevel", 9),
     CompressionType.ZLIB: (zlib.compress, zlib.decompress, "level", 9),
     CompressionType.TAR: (_to_tar, _from_tar, None, None),
@@ -157,8 +165,9 @@ TYPE_TO_FUNCS: Dict[CompressionType, Tuple[Callable, Callable, str, int]] = {
 }
 
 
-def compress(data: bytes, comp_type: CompressionType,
-             kwargs: Optional[Dict] = None) -> bytes:
+def compress(
+    data: bytes, comp_type: CompressionType, kwargs: Optional[Dict] = None
+) -> bytes:
     """Compress `data` using `comp_type` compression algorithm"""
     func_tup = TYPE_TO_FUNCS[comp_type]
     comp_func = func_tup[0]
@@ -169,8 +178,9 @@ def compress(data: bytes, comp_type: CompressionType,
     return comp_func(data, **kwargs)
 
 
-def decompress(data: bytes, comp_type: CompressionType,
-               kwargs: Optional[Dict] = None) -> bytes:
+def decompress(
+    data: bytes, comp_type: CompressionType, kwargs: Optional[Dict] = None
+) -> bytes:
     """Decompress `data` using `comp_type` compression algorithm"""
     func_tup = TYPE_TO_FUNCS[comp_type]
     kwargs = kwargs or {}

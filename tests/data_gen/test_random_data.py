@@ -1,4 +1,5 @@
 """`utils` module tests"""
+
 import os
 import unittest
 
@@ -7,12 +8,14 @@ from mlc.data_gen.random_data import ASCII_RANGE, rand_int_in_range
 
 class TestRandIntInRange(unittest.TestCase):
     """`rand_int_in_range` function"""
+
     # TODO: more tests: negative numbers?
 
     def _run_range_test(self, int_range, iterations: int = 1000):
         for iteration in range(iterations):
-            with self.subTest(iteration=iteration, iterations=iterations,
-                              int_range=int_range):
+            with self.subTest(
+                iteration=iteration, iterations=iterations, int_range=int_range
+            ):
                 value = rand_int_in_range(int_range[0], int_range[1])
                 self.assertTrue(value in range(int_range[0], int_range[1]))
 
@@ -33,8 +36,7 @@ class TestRandIntInRange(unittest.TestCase):
         low = 0
         while low < 2**32:
             skip_len = 2 if low % 2 else 3
-            low += int.from_bytes(os.urandom(skip_len),
-                                  byteorder="little") or 2
+            low += int.from_bytes(os.urandom(skip_len), byteorder="little") or 2
             self._run_range_test((low, low + 1), 100)
 
     def test_gen_ascii(self):
@@ -43,8 +45,7 @@ class TestRandIntInRange(unittest.TestCase):
             with self.subTest(iteration=iteration):
                 value = rand_int_in_range(ASCII_RANGE[0], ASCII_RANGE[1])
                 # Try to decode as ASCII. It'll raise an exception if it fails
-                int.to_bytes(value, length=1,
-                             byteorder="little").decode("ASCII")
+                int.to_bytes(value, length=1, byteorder="little").decode("ASCII")
 
     def test_low_range_is_possible(self):
         """Test that low value in range is inclusive"""
@@ -54,8 +55,7 @@ class TestRandIntInRange(unittest.TestCase):
             if 2 == rand_int_in_range(2, 10):
                 # Success case
                 return False
-        self.assertTrue(
-            False, msg="Low range never occurred: may not be possible")
+        self.assertTrue(False, msg="Low range never occurred: may not be possible")
 
     def test_low_range_0_is_possible(self):
         """Test that low value in range is inclusive when it's 0"""
@@ -65,15 +65,14 @@ class TestRandIntInRange(unittest.TestCase):
             if 0 == rand_int_in_range(0, 10):
                 # Success case
                 return False
-        self.assertTrue(
-            False, msg="Low range (0) never occurred: may not be possible")
+        self.assertTrue(False, msg="Low range (0) never occurred: may not be possible")
 
     def test_high_range_is_not_possible(self):
         """Test that high value in range is exclusive"""
         for _ in range(1000):
             if rand_int_in_range(2, 10) > 9:
                 self.assertTrue(
-                    False,
-                    msg="Low range never occurred: may not be possible")
+                    False, msg="Low range never occurred: may not be possible"
+                )
         # Success case
         return False

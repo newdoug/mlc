@@ -7,6 +7,7 @@ from mlc.data_gen.data_type_base import DataTypeBase
 
 class SourceCodeDataType(DataTypeBase):
     """Source code (plaintext) data type/format"""
+
     # TODO: how to handle encodings for interpreted plaintext data types?
     BATCH = auto()
     # Unsure if we'll be able to distringuish between header and source

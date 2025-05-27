@@ -1,10 +1,12 @@
 """Action manager"""
+
 from abc import abstractmethod
 from typing import Any, Callable
 
 
 class Action:
     """A particular piece of work. An action"""
+
     def __init__(self):
         self.instance_results = []
 
@@ -36,15 +38,17 @@ class ActionManager:
         self.registered_actions = {}
         self.loaded_actions = {}
 
-    def register_action(self, name: str, action: Action,
-                        override: bool = False) -> None:
+    def register_action(
+        self, name: str, action: Action, override: bool = False
+    ) -> None:
         """Register an action with an action name.
         Raises `ValueError` if `name` is already registered unless `override`
         is `True`.
         """
         if not override and name in self.registered_actions:
-            raise ValueError(f"Action named '{name}' already registered with "
-                             f"function '{function}'")
+            raise ValueError(
+                f"Action named '{name}' already registered with function '{function}'"
+            )
         self.registered_actions[name] = function
 
     def unregister_action(self, name: str, not_exist_ok: bool = False) -> None:
@@ -52,7 +56,7 @@ class ActionManager:
         Raises `ValueError` if the given action `name` is not registered
         unless `not_exist_ok` is `True`.
         """
-        #if not not_exist_ok and name not in self.registered_actions:
+        # if not not_exist_ok and name not in self.registered_actions:
         if name in self.registered_actions:
             self.registered_actions.pop(name)
         elif not not_exist_ok:

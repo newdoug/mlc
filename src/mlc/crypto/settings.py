@@ -20,6 +20,7 @@ class CipherInputSettings:
     different modes, etc.).
     These are settings as they could be input by a user.
     """
+
     key_size_bits: int
     mode: Optional[str] = None
 
@@ -55,6 +56,7 @@ class CipherOutputSettings:
     Same as input settings plus any ephemeral information/settings like keys,
     IVs, nonces, etc.
     """
+
     key_size_bits: int
     mode: Optional[str] = None
     nonce: Optional[bytes] = None
@@ -118,8 +120,8 @@ if __name__ == "__main__":
         print("Input settings test")
         dict1 = {
             "key_size_bits": 128,
-            #"nonce": b64encode(os.urandom(16)).decode(),
-            #"iv": b64encode(os.urandom(16)).decode(),
+            # "nonce": b64encode(os.urandom(16)).decode(),
+            # "iv": b64encode(os.urandom(16)).decode(),
             "mode": "CBC",
         }
         print(f"orig dict: {dict1}")

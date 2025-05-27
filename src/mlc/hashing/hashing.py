@@ -18,6 +18,7 @@ __all__ = [
 
 class HashType(BetterEnum):
     """Type of (unkeyed) hash algorithm"""
+
     MD2 = auto()
     # MD3??
     MD4 = auto()

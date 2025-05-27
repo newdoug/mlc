@@ -1,4 +1,3 @@
-
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from mlc.crypto.crypter import Crypter

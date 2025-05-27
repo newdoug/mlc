@@ -40,6 +40,7 @@ ASCII_RANGE = (0x20, 0x7F)
 
 class RandomDataType(DataTypeBase):
     """Types of random data to generate"""
+
     ASCII = auto()
     BINARY = auto()
     SPARSE_ASCII = auto()
@@ -56,12 +57,12 @@ class RandomDataType(DataTypeBase):
             return rand_bytes(length)
         if self == RandomDataType.SPARSE_ASCII:
             return rand_sparse_ascii_bytes(
-                length, sparse_percent=sparse_percent,
-                sparse_byte=sparse_byte)
+                length, sparse_percent=sparse_percent, sparse_byte=sparse_byte
+            )
         if self == RandomDataType.SPARSE_BINARY:
             return rand_sparse_bytes(
-                length, sparse_percent=sparse_percent,
-                sparse_byte=sparse_byte)
+                length, sparse_percent=sparse_percent, sparse_byte=sparse_byte
+            )
         raise ValueError(f"Invalid data type '{self.value}'")
 
 
@@ -69,8 +70,7 @@ def rand_int_in_range(low: int, high: int) -> int:
     """Generates a random integer that is in range [low, high) (`low` is
     inclusive, `high` is exclusive).
     """
-    return (int.from_bytes(os.urandom(4),
-                           byteorder="little") % (high - low)) +  low
+    return (int.from_bytes(os.urandom(4), byteorder="little") % (high - low)) + low
 
 
 def rand_uint64() -> int:
@@ -148,8 +148,9 @@ def rand_ascii_str(length: int) -> str:
     return rand_ascii_bytes(length).decode("ASCII")
 
 
-def rand_sparse_bytes(length: int, percent_sparse: float = 60.0,
-                      sparse_byte: int = 0) -> bytes:
+def rand_sparse_bytes(
+    length: int, percent_sparse: float = 60.0, sparse_byte: int = 0
+) -> bytes:
     """Generate random bytes of length `length` that is roughly
     `percent_sparse` percent sparse where "sparse" just means `sparse_byte`.
     """
@@ -161,8 +162,9 @@ def rand_sparse_bytes(length: int, percent_sparse: float = 60.0,
     return bytes(data)
 
 
-def rand_sparse_ascii_bytes(length: int, percent_sparse: float = 60.0,
-                            sparse_byte: int = 0) -> bytes:
+def rand_sparse_ascii_bytes(
+    length: int, percent_sparse: float = 60.0, sparse_byte: int = 0
+) -> bytes:
     """Generate random bytes of length `length` that is roughly
     `percent_sparse` percent sparse where "sparse" just means `sparse_byte`.
     The data is standard ASCII except for the `sparse_byte` values.
@@ -175,15 +177,16 @@ def rand_sparse_ascii_bytes(length: int, percent_sparse: float = 60.0,
     return bytes(data)
 
 
-def rand_sparse_ascii_str(length: int, percent_sparse: float = 60.0,
-                          sparse_byte: int = 0) -> str:
+def rand_sparse_ascii_str(
+    length: int, percent_sparse: float = 60.0, sparse_byte: int = 0
+) -> str:
     """Generate random string of length `length` that is roughly
     `percent_sparse` percent sparse where "sparse" just means `sparse_byte`.
     The data is standard ASCII except for the `sparse_byte` values.
     """
     return rand_sparse_ascii_bytes(
-        length, percent_sparse=percent_sparse,
-        sparse_byte=sparse_byte).decode("ASCII")
+        length, percent_sparse=percent_sparse, sparse_byte=sparse_byte
+    ).decode("ASCII")
 
 
 def rand_element_in_list(lst: list) -> Any:

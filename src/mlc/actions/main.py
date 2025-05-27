@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generic actions management"""
+
 import argparse
 import sys
 from typing import List
@@ -14,17 +15,20 @@ Schema: {ACTION_CONFIG_SCHEMA}
 
 
 def _get_argparser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description=ACTION_MANAGER_DESCRIPTION)
+    parser = argparse.ArgumentParser(description=ACTION_MANAGER_DESCRIPTION)
     parser.add_argument(
-        "-r", "--run",
+        "-r",
+        "--run",
         help="Action config files (YAML) to run",
         metavar="CONFIG_FILE",
-        nargs="+")
+        nargs="+",
+    )
     parser.add_argument(
-        "-l", "--list",
+        "-l",
+        "--list",
         help="List available actions and information about each",
-        action="store_true")
+        action="store_true",
+    )
     return parser
 
 
@@ -37,4 +41,3 @@ def main(args: List[str]) -> int:
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
-

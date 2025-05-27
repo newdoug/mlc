@@ -63,7 +63,9 @@ def average_bit(data: bytes) -> float:
 
 @mark
 def average_nibble(data: bytes) -> float:
-    return sum([lower_nibble(byte) + upper_nibble(byte) for byte in data]) / (len(data) * 2)
+    return sum([lower_nibble(byte) + upper_nibble(byte) for byte in data]) / (
+        len(data) * 2
+    )
 
 
 @mark
@@ -112,32 +114,56 @@ def percent_bytes_with_bit_x_off(data: bytes, bit: int) -> float:
 
 @mark
 def percent_bytes_first_nibble_gt_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) > upper_nibble(byte)]) / len(data)
+    return (
+        100.0
+        * sum([1 for byte in data if lower_nibble(byte) > upper_nibble(byte)])
+        / len(data)
+    )
 
 
 @mark
 def percent_bytes_first_nibble_ge_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) >= upper_nibble(byte)]) / len(data)
+    return (
+        100.0
+        * sum([1 for byte in data if lower_nibble(byte) >= upper_nibble(byte)])
+        / len(data)
+    )
 
 
 @mark
 def percent_bytes_first_nibble_lt_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) < upper_nibble(byte)]) / len(data)
+    return (
+        100.0
+        * sum([1 for byte in data if lower_nibble(byte) < upper_nibble(byte)])
+        / len(data)
+    )
 
 
 @mark
 def percent_bytes_first_nibble_le_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) <= upper_nibble(byte)]) / len(data)
+    return (
+        100.0
+        * sum([1 for byte in data if lower_nibble(byte) <= upper_nibble(byte)])
+        / len(data)
+    )
 
 
 @mark
 def percent_bytes_first_nibble_eq_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) == upper_nibble(byte)]) / len(data)
+    return (
+        100.0
+        * sum([1 for byte in data if lower_nibble(byte) == upper_nibble(byte)])
+        / len(data)
+    )
 
 
 @mark
 def percent_bytes_first_nibble_eq_complement_of_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) == ~upper_nibble(byte)]) / len(data)
+    return (
+        100.0
+        * sum([1 for byte in data if lower_nibble(byte) == ~upper_nibble(byte)])
+        / len(data)
+    )
 
 
 def _mirror(byte: int) -> int:
@@ -262,34 +288,49 @@ def _set_up_percent_freq_each_byte_funcs():
 _set_up_percent_freq_each_byte_funcs()
 
 
-def _set_up_percent_of_blocks_with_byte_in_pos_funcs(pos: int, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES):
+def _set_up_percent_of_blocks_with_byte_in_pos_funcs(
+    pos: int, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+):
     for num in range(0, 256):
         func_name = f"percent_of_blocks_idx_{pos}_eq_{num}"
-        globals()[func_name] = mark(lambda data: 100.0 * len([block for block in blocks(data) if block[pos] == num]) /
-                                    (len(data) / block_size_bytes))
+        globals()[func_name] = mark(
+            lambda data: 100.0
+            * len([block for block in blocks(data) if block[pos] == num])
+            / (len(data) / block_size_bytes)
+        )
 
 
 for pos in range(DEFAULT_BLOCK_SIZE_BYTES):
-    _set_up_percent_of_blocks_with_byte_in_pos_funcs(pos, block_size_bytes=DEFAULT_BLOCK_SIZE_BYTES)
+    _set_up_percent_of_blocks_with_byte_in_pos_funcs(
+        pos, block_size_bytes=DEFAULT_BLOCK_SIZE_BYTES
+    )
 
 
-def _average_block_op(data: bytes, op: Callable, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def _average_block_op(
+    data: bytes, op: Callable, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     sums = sum(op(block) for block in blocks(data, block_size_bytes))
     return sums / (len(data) // block_size_bytes)
 
 
 @mark
-def average_block_max(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def average_block_max(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     return _average_block_op(data, max, block_size_bytes=block_size_bytes)
 
 
 @mark
-def average_block_min(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def average_block_min(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     return _average_block_op(data, min, block_size_bytes=block_size_bytes)
 
 
 @mark
-def average_block_max_minus_min(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def average_block_max_minus_min(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     return _average_block_op(
         data, lambda block: max(block) - min(block), block_size_bytes=block_size_bytes
     )
@@ -317,6 +358,7 @@ def calc_chi_square(data: bytes) -> float:
 @dataclass
 class EntResults:
     """Useful outputs of `ent -t <filename>`"""
+
     entropy: float
     chi_square: float
     mean: float
@@ -365,26 +407,46 @@ def ent_serial_correlation(data: bytes) -> float:
 
 
 @mark
-def ent_entropy_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
-    block_vals = [run_ent(block).entropy for block in blocks(data, block_size_bytes=block_size_bytes)]
+def ent_entropy_block_average(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
+    block_vals = [
+        run_ent(block).entropy
+        for block in blocks(data, block_size_bytes=block_size_bytes)
+    ]
     return sum(block_vals) / len(block_vals)
 
 
 @mark
-def ent_chi_square_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
-    block_vals = [run_ent(block).chi_square for block in blocks(data, block_size_bytes=block_size_bytes)]
+def ent_chi_square_block_average(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
+    block_vals = [
+        run_ent(block).chi_square
+        for block in blocks(data, block_size_bytes=block_size_bytes)
+    ]
     return sum(block_vals) / len(block_vals)
 
 
 @mark
-def ent_monte_carlo_pi_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
-    block_vals = [run_ent(block).monte_carlo_pi for block in blocks(data, block_size_bytes=block_size_bytes)]
+def ent_monte_carlo_pi_block_average(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
+    block_vals = [
+        run_ent(block).monte_carlo_pi
+        for block in blocks(data, block_size_bytes=block_size_bytes)
+    ]
     return sum(block_vals) / len(block_vals)
 
 
 @mark
-def ent_serial_correlation_bkock_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
-    block_vals = [run_ent(block).serial_correlation for block in blocks(data, block_size_bytes=block_size_bytes)]
+def ent_serial_correlation_bkock_average(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
+    block_vals = [
+        run_ent(block).serial_correlation
+        for block in blocks(data, block_size_bytes=block_size_bytes)
+    ]
     return sum(block_vals) / len(block_vals)
 
 

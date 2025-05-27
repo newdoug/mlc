@@ -7,6 +7,7 @@ from mlc.data_gen.data_type_base import DataTypeBase
 
 class ExecutableDataType(DataTypeBase):
     """Executable data types/formats"""
+
     NIX_ELF = auto()
     NIX_LIB_A = auto()
     NIX_LIB_SO = auto()

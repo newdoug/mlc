@@ -11,6 +11,7 @@ from mlc.utils import BetterEnum
 
 class CrcType(BetterEnum):
     """Type of CRC"""
+
     CKSUM = auto()
     CRC8 = auto()
     CRC16 = auto()
@@ -25,13 +26,13 @@ class CrcSettings:
     E.g., polynomial value, initial value, specific algorithm (XMODE, CCITT,
     etc.)
     """
+
     polynomial: Optional[int] = None
     initial_value: Optional[int] = None
     alg_type: Optional[str] = None
 
 
-def calc_crc(data: bytes, crc_type: CrcType,
-             crc_settings: CrcSettings) -> bytes:
+def calc_crc(data: bytes, crc_type: CrcType, crc_settings: CrcSettings) -> bytes:
     """Calculate a CRC over `data` of type `crc_type` with settings
     `crc_settings`
     """

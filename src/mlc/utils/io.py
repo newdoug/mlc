@@ -25,10 +25,12 @@ LOG = None
 SOURCE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 LOG_DIR = os.path.join(SOURCE_DIR, "logs")
 LOG_ARCHIVE_DIR = os.path.join(LOG_DIR, "archive")
-DEFAULT_LOG_FORMAT_STR = ("%(name)s|%(asctime)s.%(msecs)03d|%(levelname)s|"
-                          "%(process)d:%(thread)d|"
-                          "%(filename)s:%(lineno)d|%(funcName)s: "
-                          "%(message)s")
+DEFAULT_LOG_FORMAT_STR = (
+    "%(name)s|%(asctime)s.%(msecs)03d|%(levelname)s|"
+    "%(process)d:%(thread)d|"
+    "%(filename)s:%(lineno)d|%(funcName)s: "
+    "%(message)s"
+)
 DEFAULT_LOGGER_NAME = "MLC"
 # Applies to asctime. Then msecs in the format string gets milliseconds
 LOG_RECORD_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -43,9 +45,9 @@ def _generate_log_filename() -> str:
     return f"{LOG_DIR}/{DEFAULT_LOGGER_NAME}_{_path_dt()}.log"
 
 
-def _compress_logs(log_dir: str, archive_dir: str,
-                   log_archive_chunk_size: int = 100) -> None:
-
+def _compress_logs(
+    log_dir: str, archive_dir: str, log_archive_chunk_size: int = 100
+) -> None:
     if not os.path.isdir(log_dir):
         # Nothing to compress
         return
@@ -54,8 +56,7 @@ def _compress_logs(log_dir: str, archive_dir: str,
     chunk_num = 0
 
     def _compress_files(filenames: List[str]):
-        arcname = (f"{DEFAULT_LOGGER_NAME}_log_archive_{chunk_num}_"
-                   f"{_path_dt()}")
+        arcname = f"{DEFAULT_LOGGER_NAME}_log_archive_{chunk_num}_{_path_dt()}"
         os.makedirs(arcname, mode=0o750, exist_ok=True)
         for filename in filenames:
             if not filename:
@@ -63,8 +64,7 @@ def _compress_logs(log_dir: str, archive_dir: str,
             dst_filename = os.path.join(arcname, os.path.basename(filename))
             os.rename(filename, dst_filename)
 
-        compressed_logs_filename = os.path.join(
-            archive_dir, f"{arcname}.tar.gz")
+        compressed_logs_filename = os.path.join(archive_dir, f"{arcname}.tar.gz")
         with tarfile.open(compressed_logs_filename, mode="w:gz") as tar_file:
             tar_file.add(arcname)
         shutil.rmtree(arcname, ignore_errors=False)
@@ -85,12 +85,14 @@ def _compress_logs(log_dir: str, archive_dir: str,
 
 
 # pylint: disable=too-many-arguments
-def _set_up_logger(use_stdout: bool = True,
-                   use_file: Union[bool, str] = True,
-                   use_syslog: bool = True,
-                   log_level=logging.DEBUG,
-                   logger_name: str = DEFAULT_LOGGER_NAME,
-                   log_format: str = DEFAULT_LOG_FORMAT_STR) -> None:
+def _set_up_logger(
+    use_stdout: bool = True,
+    use_file: Union[bool, str] = True,
+    use_syslog: bool = True,
+    log_level=logging.DEBUG,
+    logger_name: str = DEFAULT_LOGGER_NAME,
+    log_format: str = DEFAULT_LOG_FORMAT_STR,
+) -> None:
     # pylint: disable=global-statement
     global LOG
 
@@ -153,6 +155,7 @@ _set_up_logger(log_level=LOG_LEVEL)
 
 
 if __name__ == "__main__":
+
     def _main():
         LOG.debug("Test DEBUG message")
         LOG.info("Test INFO message")

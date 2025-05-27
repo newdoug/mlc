@@ -8,6 +8,7 @@ from mlc.utils.better_enum import BetterEnum
 
 class DataTypeBase(BetterEnum):
     """Base data type class"""
+
     def generate(self, settings: Optional[dict] = None) -> bytes:
         raise NotImplementedError("No specific data type to generate")
 
@@ -16,6 +17,7 @@ class DataTypeSettingKey(BetterEnum):
     """Common settings for data type generation.
     Values are keys in a dict.
     """
+
     CSV_NUM_ROWS = auto()
     JSON_DEPTH = auto()
     LENGTH = auto()

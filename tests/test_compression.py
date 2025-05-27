@@ -1,4 +1,5 @@
 """`compression` module tests"""
+
 import os
 import struct
 from typing import Optional
@@ -16,17 +17,20 @@ def _rand_data(length: Optional[int] = None) -> bytes:
 
 class TestCompressDecompress(unittest.TestCase):
     """Tests for the `compress` and `decompress` functions"""
+
     # TODO: these test basic functionality. More unit tests are possible
 
-    def _run_comp_decomp_test(self,
-                              compression_type: CompressionType,
-                              length: Optional[int] = None,
-                              num_iters: int = 20):
+    def _run_comp_decomp_test(
+        self,
+        compression_type: CompressionType,
+        length: Optional[int] = None,
+        num_iters: int = 20,
+    ):
         for iteration in range(num_iters):
             orig_data = _rand_data(length=length)
-            with self.subTest(data=orig_data,
-                              iteration=iteration,
-                              compression_type=compression_type):
+            with self.subTest(
+                data=orig_data, iteration=iteration, compression_type=compression_type
+            ):
                 comp_data = compress(orig_data, compression_type)
                 decomp_data = decompress(comp_data, compression_type)
                 self.assertEqual(orig_data, decomp_data)

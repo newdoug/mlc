@@ -1,4 +1,5 @@
 """Checksum functions, utilities, etc."""
+
 from enum import auto
 from typing import Callable, Dict
 
@@ -14,6 +15,7 @@ __all__ = [
 
 class ChecksumType(BetterEnum):
     """Type of checksum"""
+
     # TODO: implement these. zlib has some (adler32, crc32)
     ADLER32 = auto()
     BSD_UNIX = auto()

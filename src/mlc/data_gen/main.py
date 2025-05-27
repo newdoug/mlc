@@ -6,6 +6,7 @@ worth it. If it is worth it, then we can do it later.
 
 import argparse
 import enum
+
 # TODO: multiprocessing
 # TODO: pass work jobs to distributed processing stuff. Especially large
 #       jobs and especially since data will go into a DB.
@@ -23,7 +24,8 @@ from mlc.crypto.cipher_types import CipherType
 def _get_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Generate plaintext and ciphertext data for test and "
-                    "training data sets")
+        "training data sets"
+    )
     parser.add_argument(
         "--random-data",
         help="Generate random data of lengths",
@@ -32,7 +34,8 @@ def _get_argparser() -> argparse.ArgumentParser:
         choices=RandomDataType.names(),
     )
     parser.add_argument(
-        "-n", "--num-samples",
+        "-n",
+        "--num-samples",
         help="Number of samples to generate",
         type=int,
     )
@@ -45,44 +48,50 @@ def _get_argparser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--compress",
         help="Whether or not to compress generated plaintexts and if so, "
-             "what compression algorithm",
-        choices=CompressionType.names())
+        "what compression algorithm",
+        choices=CompressionType.names(),
+    )
     parser.add_argument(
         "--cipher",
         help="Cipher(s) to use to encrypt data. If compression is enabled, "
-             "encryption takes place on the compressed data. If not, on the "
-             "plaintext",
+        "encryption takes place on the compressed data. If not, on the "
+        "plaintext",
         choices=CipherType.names(),
         nargs="+",
-        default=[])
+        default=[],
+    )
     # Encryption arguments
     parser.add_argument(
         "--key-size",
         help="Key size (in bits) to use for encryption",
         type=int,
-        default=[])
+        default=[],
+    )
     return parser
 
 
-def _gen_plaintext_samples(num_samples: int,
-                           size_range: Tuple[int, int],
-                           data_type: RandomDataType) -> Iterable[bytes]:
+def _gen_plaintext_samples(
+    num_samples: int, size_range: Tuple[int, int], data_type: RandomDataType
+) -> Iterable[bytes]:
     for _ in range(num_samples):
         length = rand_int_in_range(size_range[0], size_range[1])
-        yield data_type.generate({
-            DataTypeSettingKey.LENGTH.name: length,
-        })
+        yield data_type.generate(
+            {
+                DataTypeSettingKey.LENGTH.name: length,
+            }
+        )
 
 
-def _compress_samples(samples: Iterable[bytes],
-                      compression_type: CompressionType) -> Iterable[bytes]:
+def _compress_samples(
+    samples: Iterable[bytes], compression_type: CompressionType
+) -> Iterable[bytes]:
     for sample in samples:
         yield compress(sample, compression_type)
 
 
-def _encrypt_samples(samples: Iterable[bytes],
-                     cipher_type: CipherType,
-                     key_size_bits: int) -> Iterable[bytes]:
+def _encrypt_samples(
+    samples: Iterable[bytes], cipher_type: CipherType, key_size_bits: int
+) -> Iterable[bytes]:
     _encrypt_sample(sample, cipher_type, key_size_bits)
 
 
@@ -103,18 +112,20 @@ def main(args: List[str]) -> int:
             eprint("Size range is required when generating random data")
             return 1
         if not parsed_args.num_samples or parsed_args.num_samples < 1:
-            eprint("Number of samples (must be positive) is required when "
-                   "generating random data")
+            eprint(
+                "Number of samples (must be positive) is required when "
+                "generating random data"
+            )
             return 1
 
         for data_type in parsed_args.random_data:
             _gen_plaintext_samples(
                 parsed_args.num_samples,
                 parsed_args.size_range,
-                RandomDataType(data_type))
+                RandomDataType(data_type),
+            )
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
-

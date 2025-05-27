@@ -7,6 +7,7 @@ from mlc.data_gen.data_type_base import DataTypeBase
 
 class VideoDataType(DataTypeBase):
     """Video data types/formats"""
+
     MP4 = auto()
     MKV = auto()
     MPEG = auto()
@@ -15,4 +16,3 @@ class VideoDataType(DataTypeBase):
 
     def generate(self, settings: dict) -> bytes:
         raise NotImplementedError("Video data types not yet supported")
-

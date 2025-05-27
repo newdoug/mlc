@@ -1,10 +1,12 @@
 """Base encryptor/decryptor class(es)"""
+
 import abc
 import os
 
 
 class Crypter:
     """Base class for encryptor/decryptor objects"""
+
     def __init__(self, key_size_bits: int = 256):
         assert key_size_bits % 8 == 0
         self.key_size_bits = key_size_bits
@@ -16,8 +18,7 @@ class Crypter:
 
     @abc.abstractmethod
     def gen_iv(self) -> bytes:
-        """Generate an IV (or nonce depending on cipher) usable by this cipher
-        """
+        """Generate an IV (or nonce depending on cipher) usable by this cipher"""
         raise NotImplementedError()
 
     @abc.abstractmethod

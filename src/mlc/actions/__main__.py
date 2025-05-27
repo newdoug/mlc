@@ -1,4 +1,5 @@
 """Manage actions main"""
+
 import sys
 
 from .main import main

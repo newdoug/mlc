@@ -7,6 +7,7 @@ from mlc.data_gen.data_type_base import DataTypeBase
 
 class ImageDataType(DataTypeBase):
     """Image data types/formats"""
+
     AVIF = auto()
     BMP = auto()
     CR2 = auto()

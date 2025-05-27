@@ -40,7 +40,8 @@ def _generate_random_csv_data(data_type):
     if data_type is str:
         return rand_ascii_str(
             DEFAULT_CSV_RANDOM_STR_DATA_SIZE_RANGE[0],
-            DEFAULT_CSV_RANDOM_STR_DATA_SIZE_RANGE[1])
+            DEFAULT_CSV_RANDOM_STR_DATA_SIZE_RANGE[1],
+        )
     raise ValueError(f"Bad data type for CSV data generation: '{data_type}'")
 
 
@@ -50,21 +51,24 @@ def _quote_s(value) -> str:
     return str(value)
 
 
-def generate_random_csv_header(num_cols: int = DEFAULT_CSV_NUM_COLS) \
-        -> List[str]:
+def generate_random_csv_header(num_cols: int = DEFAULT_CSV_NUM_COLS) -> List[str]:
     """Generate a random CSV header. Column names are random ASCII."""
     header = [None] * num_cols
     for i in range(num_cols):
         header[i] = rand_ascii_str(
             rand_int_in_range(
                 DEFAULT_CSV_HEADER_STR_SIZE_RANGE[0],
-                DEFAULT_CSV_HEADER_STR_SIZE_RANGE[1]))
+                DEFAULT_CSV_HEADER_STR_SIZE_RANGE[1],
+            )
+        )
     return header
 
 
-def generate_random_csv_data(num_rows_range: Tuple[int, int],
-                             header: Optional[List[str]] = None,
-                             consistent_col_data_type: bool = True) -> str:
+def generate_random_csv_data(
+    num_rows_range: Tuple[int, int],
+    header: Optional[List[str]] = None,
+    consistent_col_data_type: bool = True,
+) -> str:
     """Generate random CSV data contents with `num_cols` rows.
     if `consistent_col_data_type` is `True`, each column will be assigned a
     data type. Then, data for each column will be randomly generated.
@@ -75,8 +79,10 @@ def generate_random_csv_data(num_rows_range: Tuple[int, int],
         csv_data = ""
         num_cols = DEFAULT_CSV_NUM_COLS
     else:
-        csv_data = (f"{','.join([_quote_s(value) for value in header])}"
-                    f"{DEFAULT_CSV_LINE_ENDING}")
+        csv_data = (
+            f"{','.join([_quote_s(value) for value in header])}"
+            f"{DEFAULT_CSV_LINE_ENDING}"
+        )
         num_cols = len(header)
     # If None, a random data type will be chosen for each value
     data_types = [None] * num_cols
@@ -93,14 +99,15 @@ def generate_random_csv_data(num_rows_range: Tuple[int, int],
             row[col_idx] = _quote_s(_generate_random_csv_data(data_type))
         csv_data += f"{','.join(row)}{DEFAULT_CSV_LINE_ENDING}"
     if csv_data:
-        return csv_data[:-len(DEFAULT_CSV_LINE_ENDING)]
+        return csv_data[: -len(DEFAULT_CSV_LINE_ENDING)]
     return csv_data
 
 
 def generate_random_csv_header_and_data(
-        num_rows_range: Tuple[int, int],
-        num_cols: int = DEFAULT_CSV_NUM_COLS,
-        consistent_col_data_type: bool = True) -> str:
+    num_rows_range: Tuple[int, int],
+    num_cols: int = DEFAULT_CSV_NUM_COLS,
+    consistent_col_data_type: bool = True,
+) -> str:
     """Generate random CSV header of length `num_cols` and data"""
     header = generate_random_csv_header(num_cols)
     return generate_random_csv_data(

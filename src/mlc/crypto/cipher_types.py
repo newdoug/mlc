@@ -7,6 +7,7 @@ from mlc.utils.better_enum import BetterEnum
 
 class CipherType(BetterEnum):
     """Type of cipher to use"""
+
     # TODO: finish implementing these and testing these
     # TODO: more modes for AES: CTR, OFB, CFB, CFB8, XTS, ECB, CBC, GCM
     # TODO: More asymmetric, more symmetric, more bit sizes, more modes

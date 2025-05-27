@@ -1,4 +1,5 @@
 """__main__ module"""
+
 import sys
 
 from .main import main

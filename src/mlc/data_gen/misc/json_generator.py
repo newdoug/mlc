@@ -21,14 +21,15 @@ __all__ = [
 
 class JsonGenerator:
     """Generates random JSON"""
+
     NON_RECURSIVE_TYPES = [
         int,
         float,
         str,
         None,
     ]
-    LIST_DATA_TYPES = [ dict, list ] + NON_RECURSIVE_TYPES
-    DICT_DATA_TYPES = [ dict, list ] + NON_RECURSIVE_TYPES
+    LIST_DATA_TYPES = [dict, list] + NON_RECURSIVE_TYPES
+    DICT_DATA_TYPES = [dict, list] + NON_RECURSIVE_TYPES
     # The most common types for the outer most element type. The others are
     # valid, but don't really produce interesting JSON.
     OUTER_TYPES = [
@@ -39,9 +40,14 @@ class JsonGenerator:
     TRUE_OUTER_TYPES = OUTER_TYPES + NON_RECURSIVE_TYPES
 
     # pylint: disable=too-many-arguments
-    def __init__(self, max_depth: int = 5, max_num_keys: int = 20,
-                 max_list_length: int = 20, min_key_length: int = 2,
-                 max_key_length: int = 16) -> Union[dict, list]:
+    def __init__(
+        self,
+        max_depth: int = 5,
+        max_num_keys: int = 20,
+        max_list_length: int = 20,
+        min_key_length: int = 2,
+        max_key_length: int = 16,
+    ) -> Union[dict, list]:
         self.max_depth = max_depth
         self.max_num_keys = max_num_keys
         self.max_list_length = max_list_length
@@ -52,24 +58,27 @@ class JsonGenerator:
         if depth >= self.max_depth:
             return {}
         return {
-            self._gen_key(): self._gen_element(depth + 1,
-                rand_element_in_list(JsonGenerator.DICT_DATA_TYPES))
-                    for _ in range(rand_int_in_range(0, self.max_num_keys))
+            self._gen_key(): self._gen_element(
+                depth + 1, rand_element_in_list(JsonGenerator.DICT_DATA_TYPES)
+            )
+            for _ in range(rand_int_in_range(0, self.max_num_keys))
         }
 
     def _gen_list(self, depth: int) -> list:
         if depth >= self.max_depth:
             return []
         return [
-            self._gen_element(depth + 1, rand_element_in_list(
-                JsonGenerator.LIST_DATA_TYPES))
+            self._gen_element(
+                depth + 1, rand_element_in_list(JsonGenerator.LIST_DATA_TYPES)
+            )
             for _ in range(rand_int_in_range(0, self.max_list_length))
         ]
 
     def _gen_key(self) -> str:
         # range arbitrarily chosen
-        return rand_ascii_str(rand_int_in_range(
-            self.min_key_length, self.max_key_length + 1))
+        return rand_ascii_str(
+            rand_int_in_range(self.min_key_length, self.max_key_length + 1)
+        )
 
     def _gen_element(self, depth: int, type_):
         if type_ is None:

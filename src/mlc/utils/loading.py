@@ -1,4 +1,5 @@
 """Loading configs and other file formats"""
+
 import json
 from typing import Union
 

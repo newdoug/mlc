@@ -7,6 +7,7 @@ from mlc.data_gen.data_type_base import DataTypeBase
 
 class DocumentDataType(DataTypeBase):
     """Document (mostly plaintext) data type/format"""
+
     ASCIIDOC = auto()
     EPUB = auto()
     # HOCON is a superset of .properties and .json, so leaving that off
