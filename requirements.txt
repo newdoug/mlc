@@ -1,3 +1,28 @@
 pycryptodome
 cryptography
 pyyaml
+pandas
+numpy 
+scikit-learn
+xgboost
+# Make sure to install Dask with distributed and LightGBM with Dask support?
+# Choose roles:
+# One machine = Scheduler (start with bash command: dask-scheduler)
+# Others = Worker (start with bash command on each worker: dask-worker tcp://192.168.1.100:8786 --nprocs 2 --nthreads 2
+# --memory-limit 4GB)
+# Connect in script:
+# from dask.distributed import Client
+# client = Client("tcp://192.168.1.100:8786")
+# dask-dashboard: http://<scheduler-ip>:8787
+lightgbm
+shap
+lime
+optuna
+boruta
+seaborn
+matplotlib
+umap-learn
+dask[complete]
+dask-lightgbm
+distributed
+ray[default]
