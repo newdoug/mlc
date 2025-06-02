@@ -591,6 +591,66 @@ def _set_up_percent_bit_mask_match_funcs():
 _set_up_percent_bit_mask_match_funcs()
 
 
+@mark
+def xor_all_bytes(data: bytes) -> int:
+    val = 0
+    for byte in data:
+        val ^= byte
+    return val
+
+
+@mark
+def average_xor_per_block(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+    sums = 0
+    num_blocks = 0
+    for block in blocks(data, block_size_bytes=block_size_bytes):
+        sums += xor_all_bytes(block)
+        num_blocks += 1
+    return sums / num_blocks
+
+
+@mark
+def average_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+    sums = 0
+    num_blocks = 0
+    for block in blocks(data, block_size_bytes=block_size_bytes):
+        sums += sum(block) / block_size_bytes
+        num_blocks += 1
+    return sums / num_blocks
+
+
+@mark
+def variance(data: bytes) -> float:
+    data_len = len(data)
+    average = sum(data) / data_len
+    return sum((byte - average) ** 2 for byte in data) / data_len
+
+
+@mark
+def standard_deviation(data: bytes) -> float:
+    return variance(data) ** 0.5
+
+
+@mark
+def average_block_variance(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+    variances = 0
+    num_blocks = 0
+    for block in blocks(data, block_size_bytes=block_size_bytes):
+        variances += variance(block)
+        num_blocks += 1
+    return variances / num_blocks
+
+
+@mark
+def average_block_standard_deviation(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+    deviations = 0
+    num_blocks = 0
+    for block in blocks(data, block_size_bytes=block_size_bytes):
+        deviations += standard_deviation(block)
+        num_blocks += 1
+    return deviations / num_blocks
+
+
 # TODO: track occurrences and frequencies of all byte strings <= length 5? 4? 8?
 # TODO: detect clusters of bytes that are close to each other in value? E.g.
 # \xAB\x29\x63\x66\x62\x5F\x72 might trigger "bytes '\x63\x66\x62\x5F'
@@ -614,15 +674,8 @@ _set_up_percent_bit_mask_match_funcs()
 #       idk what I mean by this
 # TODO: percent similarity between plaintext and ciphertext
 # TODO: check for recurring patterns of bits
-# TODO: bit transitions? Average per byte? Average byte 16 bits? 32 bits?
-# TODO: average bit on length? Per byte? Per 16 bits? Per 32 bits?
-# TODO: other bitwise symmetry percentages? E.g. first 2 bits equal last 2 bits? First bit equals last bit? First 3 bits equals last
-# 3 bits? 5 bits? More?
-# TODO: variance
-# TODO: std dev
-# TODO: XOR total
-# TODO: average XOR total per block
-# TODO: average block average
+# TODO: bit transitions (how often a bit transitions from on to off or off to on between indices)? Average per byte? Average byte 16 bits? 32 bits?
+# TODO: average bit on lengthi (bits on in a row)? Per byte? Per 16 bits? Per 32 bits?
 
 
 def get_analysis_funcs() -> dict[str, Callable]:
