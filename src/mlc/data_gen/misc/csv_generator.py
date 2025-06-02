@@ -79,10 +79,7 @@ def generate_random_csv_data(
         csv_data = ""
         num_cols = DEFAULT_CSV_NUM_COLS
     else:
-        csv_data = (
-            f"{','.join([_quote_s(value) for value in header])}"
-            f"{DEFAULT_CSV_LINE_ENDING}"
-        )
+        csv_data = f"{','.join([_quote_s(value) for value in header])}" f"{DEFAULT_CSV_LINE_ENDING}"
         num_cols = len(header)
     # If None, a random data type will be chosen for each value
     data_types = [None] * num_cols

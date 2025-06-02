@@ -17,3 +17,6 @@ a.out
 
 *.sw[a-z]
 *.log
+
+# Various lock files, especially poetry.lock
+*.lock

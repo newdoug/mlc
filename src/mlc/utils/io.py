@@ -45,9 +45,7 @@ def _generate_log_filename() -> str:
     return f"{LOG_DIR}/{DEFAULT_LOGGER_NAME}_{_path_dt()}.log"
 
 
-def _compress_logs(
-    log_dir: str, archive_dir: str, log_archive_chunk_size: int = 100
-) -> None:
+def _compress_logs(log_dir: str, archive_dir: str, log_archive_chunk_size: int = 100) -> None:
     if not os.path.isdir(log_dir):
         # Nothing to compress
         return

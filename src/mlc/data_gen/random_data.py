@@ -60,9 +60,7 @@ class RandomDataType(DataTypeBase):
                 length, sparse_percent=sparse_percent, sparse_byte=sparse_byte
             )
         if self == RandomDataType.SPARSE_BINARY:
-            return rand_sparse_bytes(
-                length, sparse_percent=sparse_percent, sparse_byte=sparse_byte
-            )
+            return rand_sparse_bytes(length, sparse_percent=sparse_percent, sparse_byte=sparse_byte)
         raise ValueError(f"Invalid data type '{self.value}'")
 
 
@@ -148,9 +146,7 @@ def rand_ascii_str(length: int) -> str:
     return rand_ascii_bytes(length).decode("ASCII")
 
 
-def rand_sparse_bytes(
-    length: int, percent_sparse: float = 60.0, sparse_byte: int = 0
-) -> bytes:
+def rand_sparse_bytes(length: int, percent_sparse: float = 60.0, sparse_byte: int = 0) -> bytes:
     """Generate random bytes of length `length` that is roughly
     `percent_sparse` percent sparse where "sparse" just means `sparse_byte`.
     """
@@ -177,9 +173,7 @@ def rand_sparse_ascii_bytes(
     return bytes(data)
 
 
-def rand_sparse_ascii_str(
-    length: int, percent_sparse: float = 60.0, sparse_byte: int = 0
-) -> str:
+def rand_sparse_ascii_str(length: int, percent_sparse: float = 60.0, sparse_byte: int = 0) -> str:
     """Generate random string of length `length` that is roughly
     `percent_sparse` percent sparse where "sparse" just means `sparse_byte`.
     The data is standard ASCII except for the `sparse_byte` values.

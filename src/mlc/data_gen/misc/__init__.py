@@ -43,9 +43,7 @@ class MiscFileDataType(DataTypeBase):
             max_depth = settings.get(DataTypeSettingKey.JSON_DEPTH.name, 5)
             return rand_json_str(max_depth).encode("UTF-8")
         if self == MiscFileDataType.CSV:
-            num_cols = settings.get(
-                DataTypeSettingKey.CSV_NUM_COLS, DEFAULT_CSV_NUM_COLS
-            )
+            num_cols = settings.get(DataTypeSettingKey.CSV_NUM_COLS, DEFAULT_CSV_NUM_COLS)
             csv_header = settings.get(
                 DataTypeSettingKey.CSV_HEADER, generate_random_csv_header(num_cols)
             )

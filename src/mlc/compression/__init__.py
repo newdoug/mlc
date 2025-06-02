@@ -165,9 +165,7 @@ TYPE_TO_FUNCS: Dict[CompressionType, Tuple[Callable, Callable, str, int]] = {
 }
 
 
-def compress(
-    data: bytes, comp_type: CompressionType, kwargs: Optional[Dict] = None
-) -> bytes:
+def compress(data: bytes, comp_type: CompressionType, kwargs: Optional[Dict] = None) -> bytes:
     """Compress `data` using `comp_type` compression algorithm"""
     func_tup = TYPE_TO_FUNCS[comp_type]
     comp_func = func_tup[0]
@@ -178,9 +176,7 @@ def compress(
     return comp_func(data, **kwargs)
 
 
-def decompress(
-    data: bytes, comp_type: CompressionType, kwargs: Optional[Dict] = None
-) -> bytes:
+def decompress(data: bytes, comp_type: CompressionType, kwargs: Optional[Dict] = None) -> bytes:
     """Decompress `data` using `comp_type` compression algorithm"""
     func_tup = TYPE_TO_FUNCS[comp_type]
     kwargs = kwargs or {}

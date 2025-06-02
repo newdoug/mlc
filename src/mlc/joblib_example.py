@@ -12,14 +12,13 @@ model = LogisticRegression()
 model.fit(X_train, y_train)
 
 # Save the model
-dump(model, 'logreg_model.joblib')
+dump(model, "logreg_model.joblib")
 
 # Load the model
-loaded_model = load('logreg_model.joblib')
+loaded_model = load("logreg_model.joblib")
 
 # Use it
 print("Accuracy:", loaded_model.score(X_test, y_test))
-
 
 
 # Ex 2: Run a function in parallel across CPU cores
@@ -27,8 +26,10 @@ print("Accuracy:", loaded_model.score(X_test, y_test))
 from joblib import Parallel, delayed
 import math
 
+
 def slow_square(x):
-    return math.sqrt(x ** 2)
+    return math.sqrt(x**2)
+
 
 results = Parallel(n_jobs=4)(delayed(slow_square)(i) for i in range(10))
 print(results)
@@ -38,16 +39,19 @@ print(results)
 from joblib import Memory
 import os
 
-memory = Memory(location='cachedir', verbose=0)
+memory = Memory(location="cachedir", verbose=0)
+
 
 @memory.cache
 def slow_function(x):
-    import time; time.sleep(2)
+    import time
+
+    time.sleep(2)
     return x * 2
+
 
 # First call is slow
 print(slow_function(10))  # Takes ~2 seconds
 
 # Second call is fast (cached)
 print(slow_function(10))  # Instant
-

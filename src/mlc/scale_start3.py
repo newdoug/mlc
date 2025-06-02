@@ -12,4 +12,3 @@ trainer = LightGBMTrainer(
     data="s3://your-bucket/dataset.parquet",  # or local distributed FS
 )
 result = trainer.fit()
-

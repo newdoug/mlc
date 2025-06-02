@@ -23,8 +23,7 @@ from mlc.crypto.cipher_types import CipherType
 
 def _get_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Generate plaintext and ciphertext data for test and "
-        "training data sets"
+        description="Generate plaintext and ciphertext data for test and " "training data sets"
     )
     parser.add_argument(
         "--random-data",
@@ -113,8 +112,7 @@ def main(args: List[str]) -> int:
             return 1
         if not parsed_args.num_samples or parsed_args.num_samples < 1:
             eprint(
-                "Number of samples (must be positive) is required when "
-                "generating random data"
+                "Number of samples (must be positive) is required when " "generating random data"
             )
             return 1
 

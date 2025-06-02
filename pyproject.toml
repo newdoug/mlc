@@ -1,0 +1,71 @@
+[tool.poetry]
+name = "mlc"
+version = "0.1.0"
+description = "ML for crypto analysis use"
+authors = ["Silky <sbk7826@g.rit.edu>"]
+license = "MIT"
+readme = "README.txt"
+packages = [{ include = "src/mlc" }]
+# requires-python = ">=3.8"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+#pycryptodome
+#cryptography
+#zstd
+#pyyaml
+#pandas
+#numpy
+#scikit-learn
+#xgboost
+## Make sure to install Dask with distributed and LightGBM with Dask support?
+## Choose roles:
+## One machine = Scheduler (start with bash command: dask-scheduler)
+## Others = Worker (start with bash command on each worker: dask-worker tcp://192.168.1.100:8786 --nprocs 2 --nthreads 2
+## --memory-limit 4GB)
+## Connect in script:
+## from dask.distributed import Client
+## client = Client("tcp://192.168.1.100:8786")
+## dask-dashboard: http://<scheduler-ip>:8787
+#lightgbm
+#shap
+#lime
+#optuna
+#boruta
+#seaborn
+#matplotlib
+#umap-learn
+#dask[complete]
+#dask-lightgbm
+#distributed
+#ray[default]
+#psycopg[binary]
+#asyncpg  # async postgresql driver?
+#pytest-postgresql
+#alembic
+#sqlalchemy[asyncio]
+#pydantic
+#sqlmodel
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+black = "^24.0"
+pre-commit = "^3.0"
+#pytest-mock  # Wrapper around unittest.mock (mocking lib) for pytest usage.
+#pytest-cov  # Gives test results results to code coverage tool
+#pytest-pydantic  # Automatically validates pydantic models?
+#pytest-random-order  # Provide option to execute tests in a random order
+#pytest-xdist  # Distributed (across CPUs) testing
+#tox
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38']

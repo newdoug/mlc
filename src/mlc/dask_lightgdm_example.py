@@ -5,7 +5,7 @@ from lightgbm.dask import DaskDMatrix, train as dask_train
 from sklearn.metrics import accuracy_score, roc_auc_score
 
 # Start a local Dask cluster (or connect to remote)
-cluster = LocalCluster(n_workers=4, threads_per_worker=2, memory_limit='4GB')
+cluster = LocalCluster(n_workers=4, threads_per_worker=2, memory_limit="4GB")
 client = Client(cluster)
 
 # Load large CSV as Dask DataFrame
@@ -20,15 +20,11 @@ y = ddf["target"]
 dtrain = DaskDMatrix(client, X, y)
 
 # LightGBM parameters
-params = {
-    "objective": "binary",
-    "metric": "auc",
-    "verbosity": -1
-}
+params = {"objective": "binary", "metric": "auc", "verbosity": -1}
 
 # Train model
 output = dask_train(client, params, dtrain, num_boost_round=100)
-model = output['booster']  # trained booster
+model = output["booster"]  # trained booster
 
 # Predict on the same data (for demo)
 preds = model.predict(X.compute())

@@ -15,7 +15,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 data = pd.read_csv("your_dataset.csv")
 
 # --- Basic Setup ---
-TARGET_COLUMN = 'target'  # Replace with your target column name
+TARGET_COLUMN = "target"  # Replace with your target column name
 X = data.drop(columns=[TARGET_COLUMN])
 y = data[TARGET_COLUMN]
 
@@ -36,11 +36,12 @@ X_test_selected = selector.transform(X_test_scaled)
 
 # --- Model Candidates ---
 models = {
-    'LogisticRegression': LogisticRegression(max_iter=1000),
-    'RandomForest': RandomForestClassifier(n_estimators=100, random_state=42),
-    'XGBoost': XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
-    'LightGBM': LGBMClassifier()
+    "LogisticRegression": LogisticRegression(max_iter=1000),
+    "RandomForest": RandomForestClassifier(n_estimators=100, random_state=42),
+    "XGBoost": XGBClassifier(use_label_encoder=False, eval_metric="logloss"),
+    "LightGBM": LGBMClassifier(),
 }
+
 
 # --- Train and Evaluate Models ---
 def evaluate_model(name, model, X_train, X_test, y_train, y_test):
@@ -55,6 +56,6 @@ def evaluate_model(name, model, X_train, X_test, y_train, y_test):
     print(f"F1 Score: {f1_score(y_test, y_pred):.4f}")
     print(f"ROC AUC: {roc_auc_score(y_test, y_prob):.4f}")
 
+
 for name, model in models.items():
     evaluate_model(name, model, X_train_selected, X_test_selected, y_train, y_test)
-

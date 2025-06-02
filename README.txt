@@ -272,18 +272,76 @@ learning to the model.
 * Identify test (SMS) messages. Emojis? Acronyms used in texting Text message
   "format" e.g. how they may be stored on phones with a header and/or footer or
   how they're sent over the air with header or footer.
-* Identify if it's an over-the-air message? Psk encoding identification? Common footers and headers? 
-* Identify packet formats. Ethernet, tcp, ftp, udp, IP, etc. 
-* Turn the jobs thing from mlc into generic multi-processing ability. Kinda already done. 
-* Make the jobs thing support multiple communication methods. Tcp socket, udp socket, SSH, Unix socket, something more inter-process specific, etc. 
+* Identify if it's an over-the-air message? Psk encoding identification? Common footers and headers?
+* Identify packet formats. Ethernet, tcp, ftp, udp, IP, etc.
+* Turn the jobs thing from mlc into generic multi-processing ability. Kinda already done.
+* Make the jobs thing support multiple communication methods. Tcp socket, udp socket, SSH, Unix socket, something more inter-process specific, etc.
 * Try to identify more complex meanings behind tars/archives. This can mean at least 2 things:
-  1) "the contents of this tar looks like a got repo" or something similar 
+  1) "the contents of this tar looks like a got repo" or something similar
   2) "this exact file is available here: *some Internet link*" or "this exact file is available on this website somewhere: *some website name and/or link" or "a very similar file (maybe show/offer a diff if possible and available) is available here: *some link or site name*" (that one sounds a bit difficult and would probably take a ton of processing - would need to keep track of all files we've seen and metadata about it and then compare each of them to this one were currently inspecting - begs the idea of a service with background tasks/sub services/jobs running and sending notifications in some way to the user), or "this archive contains a git repo (commit XXXX if possible) that's from here: *repo link (GitHub, gitlab, bitbucket, another site, etc.)*"
 
 
 
-Permute actual code pulled from GitHub or something using lexer/parser to come up with variations of algorithms and see if any produce any keys or partial keys or offsets of keys or something at all related to a key 
-Permuting C/c++ and assembly. 
-Start with something similar to the actual algorithm. 
-Also try bad transformations to see if anything easy somehow works 
-Aes, chacha20, rsa, etc. 
+Permute actual code pulled from GitHub or something using lexer/parser to come up with variations of algorithms and see if any produce any keys or partial keys or offsets of keys or something at all related to a key
+Permuting C/c++ and assembly.
+Start with something similar to the actual algorithm.
+Also try bad transformations to see if anything easy somehow works
+Aes, chacha20, rsa, etc.
+
+
+# Commands
+
+## Install `poetry`
+
+```
+# Or some other install command, e.g., with `apt` or `yum`
+curl -sSL https://install.python-poetry.org | python3 -
+# Add this line to `~/.bashrc`: update PATH to make poetry runnable (it'll probably be put into ~/.local/bin)
+export PATH="$PATH:$HOME/.local/bin"
+source ~/.bashrc
+```
+
+## Create a project and install dependencies
+
+Assumes you're in the same directory as `pyproject.toml` (the primary repo dir).
+
+```
+poetry install
+```
+
+## Enter Virtual Environment
+
+After installing above, enter the virtual environment that was created.
+
+```
+# env activate will just print the command necessary to activate the environment
+$(poetry env activate | head -n1)
+```
+
+## Install pre-commit Hooks
+
+```
+pre-commit install
+```
+
+### Run pre-commit Hooks
+
+Runs the pre-commit hooks manually.
+
+```
+pre-commit run --all-files
+```
+
+## Format Code
+
+This is the command to manually run the code formatting on current directory. Code formatting should automatically take
+place as part of a pre-commit hook.
+```
+poetry run black .
+```
+
+## Run Tests
+
+```
+poetry run pytest
+```

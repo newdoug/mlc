@@ -9,6 +9,7 @@ You can run distributed XGBoost using:
 
     Ray
 """
+
 from dask.distributed import Client
 from dask_ml.model_selection import train_test_split
 import dask.dataframe as dd
@@ -26,5 +27,3 @@ X_train, X_test, y_train, y_test = train_test_split(X, y)
 dtrain = xgb.dask.DaskDMatrix(client, X_train, y_train)
 params = {"objective": "binary:logistic", "eval_metric": "auc"}
 output = xgb.dask.train(client, params, dtrain, num_boost_round=100)
-
-

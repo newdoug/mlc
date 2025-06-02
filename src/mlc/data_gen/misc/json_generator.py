@@ -68,17 +68,13 @@ class JsonGenerator:
         if depth >= self.max_depth:
             return []
         return [
-            self._gen_element(
-                depth + 1, rand_element_in_list(JsonGenerator.LIST_DATA_TYPES)
-            )
+            self._gen_element(depth + 1, rand_element_in_list(JsonGenerator.LIST_DATA_TYPES))
             for _ in range(rand_int_in_range(0, self.max_list_length))
         ]
 
     def _gen_key(self) -> str:
         # range arbitrarily chosen
-        return rand_ascii_str(
-            rand_int_in_range(self.min_key_length, self.max_key_length + 1)
-        )
+        return rand_ascii_str(rand_int_in_range(self.min_key_length, self.max_key_length + 1))
 
     def _gen_element(self, depth: int, type_):
         if type_ is None:

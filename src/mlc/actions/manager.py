@@ -38,17 +38,13 @@ class ActionManager:
         self.registered_actions = {}
         self.loaded_actions = {}
 
-    def register_action(
-        self, name: str, action: Action, override: bool = False
-    ) -> None:
+    def register_action(self, name: str, action: Action, override: bool = False) -> None:
         """Register an action with an action name.
         Raises `ValueError` if `name` is already registered unless `override`
         is `True`.
         """
         if not override and name in self.registered_actions:
-            raise ValueError(
-                f"Action named '{name}' already registered with function '{function}'"
-            )
+            raise ValueError(f"Action named '{name}' already registered with function '{function}'")
         self.registered_actions[name] = function
 
     def unregister_action(self, name: str, not_exist_ok: bool = False) -> None:

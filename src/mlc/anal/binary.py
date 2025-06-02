@@ -70,9 +70,7 @@ def average_bit(data: bytes) -> float:
 
 @mark
 def average_nibble(data: bytes) -> float:
-    return sum([lower_nibble(byte) + upper_nibble(byte) for byte in data]) / (
-        len(data) * 2
-    )
+    return sum([lower_nibble(byte) + upper_nibble(byte) for byte in data]) / (len(data) * 2)
 
 
 @mark
@@ -121,55 +119,33 @@ def percent_bytes_with_bit_x_off(data: bytes, bit: int) -> float:
 
 @mark
 def percent_bytes_first_nibble_gt_second_nibble(data: bytes) -> float:
-    return (
-        100.0
-        * sum([1 for byte in data if lower_nibble(byte) > upper_nibble(byte)])
-        / len(data)
-    )
+    return 100.0 * sum([1 for byte in data if lower_nibble(byte) > upper_nibble(byte)]) / len(data)
 
 
 @mark
 def percent_bytes_first_nibble_ge_second_nibble(data: bytes) -> float:
-    return (
-        100.0
-        * sum([1 for byte in data if lower_nibble(byte) >= upper_nibble(byte)])
-        / len(data)
-    )
+    return 100.0 * sum([1 for byte in data if lower_nibble(byte) >= upper_nibble(byte)]) / len(data)
 
 
 @mark
 def percent_bytes_first_nibble_lt_second_nibble(data: bytes) -> float:
-    return (
-        100.0
-        * sum([1 for byte in data if lower_nibble(byte) < upper_nibble(byte)])
-        / len(data)
-    )
+    return 100.0 * sum([1 for byte in data if lower_nibble(byte) < upper_nibble(byte)]) / len(data)
 
 
 @mark
 def percent_bytes_first_nibble_le_second_nibble(data: bytes) -> float:
-    return (
-        100.0
-        * sum([1 for byte in data if lower_nibble(byte) <= upper_nibble(byte)])
-        / len(data)
-    )
+    return 100.0 * sum([1 for byte in data if lower_nibble(byte) <= upper_nibble(byte)]) / len(data)
 
 
 @mark
 def percent_bytes_first_nibble_eq_second_nibble(data: bytes) -> float:
-    return (
-        100.0
-        * sum([1 for byte in data if lower_nibble(byte) == upper_nibble(byte)])
-        / len(data)
-    )
+    return 100.0 * sum([1 for byte in data if lower_nibble(byte) == upper_nibble(byte)]) / len(data)
 
 
 @mark
 def percent_bytes_first_nibble_eq_complement_of_second_nibble(data: bytes) -> float:
     return (
-        100.0
-        * sum([1 for byte in data if lower_nibble(byte) == ~upper_nibble(byte)])
-        / len(data)
+        100.0 * sum([1 for byte in data if lower_nibble(byte) == ~upper_nibble(byte)]) / len(data)
     )
 
 
@@ -267,9 +243,7 @@ def _set_up_percent_bytes_with_bits_funcs():
             patt = ("{:0" + str(bit_len) + "b}").format(patt)
             func_name = f"percent_of_bytes_with_bits_{patt}"
             globals()[func_name] = mark(
-                lambda data: 100.0
-                * sum([1 for byte in data if patt in _bin(byte)])
-                / len(data)
+                lambda data: 100.0 * sum([1 for byte in data if patt in _bin(byte)]) / len(data)
             )
 
 
@@ -309,9 +283,7 @@ def _set_up_percent_of_blocks_with_byte_in_pos_funcs(
 
 
 for pos in range(DEFAULT_BLOCK_SIZE_BYTES):
-    _set_up_percent_of_blocks_with_byte_in_pos_funcs(
-        pos, block_size_bytes=DEFAULT_BLOCK_SIZE_BYTES
-    )
+    _set_up_percent_of_blocks_with_byte_in_pos_funcs(pos, block_size_bytes=DEFAULT_BLOCK_SIZE_BYTES)
 
 
 def _average_block_op(
@@ -322,16 +294,12 @@ def _average_block_op(
 
 
 @mark
-def average_block_max(
-    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
-) -> float:
+def average_block_max(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
     return _average_block_op(data, max, block_size_bytes=block_size_bytes)
 
 
 @mark
-def average_block_min(
-    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
-) -> float:
+def average_block_min(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
     return _average_block_op(data, min, block_size_bytes=block_size_bytes)
 
 
@@ -429,8 +397,7 @@ def ent_entropy_block_average(
     data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
 ) -> float:
     block_vals = [
-        run_ent(block).entropy
-        for block in blocks(data, block_size_bytes=block_size_bytes)
+        run_ent(block).entropy for block in blocks(data, block_size_bytes=block_size_bytes)
     ]
     return sum(block_vals) / len(block_vals)
 
@@ -440,8 +407,7 @@ def ent_chi_square_block_average(
     data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
 ) -> float:
     block_vals = [
-        run_ent(block).chi_square
-        for block in blocks(data, block_size_bytes=block_size_bytes)
+        run_ent(block).chi_square for block in blocks(data, block_size_bytes=block_size_bytes)
     ]
     return sum(block_vals) / len(block_vals)
 
@@ -451,8 +417,7 @@ def ent_monte_carlo_pi_block_average(
     data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
 ) -> float:
     block_vals = [
-        run_ent(block).monte_carlo_pi
-        for block in blocks(data, block_size_bytes=block_size_bytes)
+        run_ent(block).monte_carlo_pi for block in blocks(data, block_size_bytes=block_size_bytes)
     ]
     return sum(block_vals) / len(block_vals)
 
@@ -562,10 +527,7 @@ def _set_up_percent_bit_symmetries_funcs():
                     s = 0
                     for byte in data:
                         bin_byte = _bin(byte)
-                        if (
-                            bin_byte[start_1 : end_1 + 1]
-                            == bin_byte[start_2 : end_2 + 1]
-                        ):
+                        if bin_byte[start_1 : end_1 + 1] == bin_byte[start_2 : end_2 + 1]:
                             s += 1
                     return s
 
@@ -580,9 +542,7 @@ def _set_up_percent_bit_symmetries_funcs():
                     # This binds the proper idx values to the function returned
                     # TODO: make sure other functions that do this globals()[...] thing properly bind values too (should
                     # be verifiable with unit tests)
-                    _get_func(
-                        start_bit_idx_1, end_bit_idx_1, start_bit_idx_2, end_bit_idx_2
-                    )
+                    _get_func(start_bit_idx_1, end_bit_idx_1, start_bit_idx_2, end_bit_idx_2)
                 )
 
 
@@ -593,9 +553,7 @@ def _set_up_percent_bit_mask_match_funcs():
     for mask in range(1, 256):
         func_name = f"percent_of_bytes_matching_mask_{mask}"
         globals()[func_name] = mark(
-            lambda data: 100.0
-            * sum([1 for byte in data if byte & mask == mask])
-            / len(data)
+            lambda data: 100.0 * sum([1 for byte in data if byte & mask == mask]) / len(data)
         )
 
 
@@ -611,9 +569,7 @@ def xor_all_bytes(data: bytes) -> int:
 
 
 @mark
-def average_xor_per_block(
-    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
-) -> float:
+def average_xor_per_block(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
     sums = 0
     num_blocks = 0
     for block in blocks(data, block_size_bytes=block_size_bytes):
@@ -623,9 +579,7 @@ def average_xor_per_block(
 
 
 @mark
-def average_block_average(
-    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
-) -> float:
+def average_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
     sums = 0
     num_blocks = 0
     for block in blocks(data, block_size_bytes=block_size_bytes):
@@ -647,9 +601,7 @@ def standard_deviation(data: bytes) -> float:
 
 
 @mark
-def average_block_variance(
-    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
-) -> float:
+def average_block_variance(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
     variances = 0
     num_blocks = 0
     for block in blocks(data, block_size_bytes=block_size_bytes):
