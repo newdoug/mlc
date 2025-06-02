@@ -5,6 +5,9 @@ import math
 import subprocess
 import tempfile
 from typing import Callable
+import zlib
+
+from mlc.compression import compress, CompressionType
 
 
 _MARK_ATTR = "is_anal"
@@ -28,6 +31,10 @@ def blocks(data: bytes, block_size_bytes: int) -> list[bytes]:
 
 def _bin(byte: int) -> str:
     return "{:08b}".format(byte)
+
+
+def bytes_to_bin_str(data: bytes) -> str:
+    return "".join([_bin(byte) for byte in data])
 
 
 def lower_nibble(byte: int) -> int:
@@ -173,6 +180,7 @@ def _mirror(byte: int) -> int:
 
 @mark
 def percent_bytes_first_nibble_eq_mirror_of_second_nibble(data: bytes) -> float:
+    # TODO: is sum([1 for byte ...]) or len([byte for byte ...]) faster? Memory efficiency?
     return (
         100.0
         * sum([1 for byte in data if lower_nibble(byte) == _mirror(upper_nibble(byte))])
@@ -461,6 +469,7 @@ def ent_serial_correlation_bkock_average(
 
 
 def bits_on_indices(byte: int) -> list[int]:
+    """Returns list of indices of which bits were on in given `byte` (range [0, 255])"""
     byte = _bin(byte)[::-1]
     return [i for i in range(len(byte)) if byte[i] == "1"]
 
@@ -474,6 +483,112 @@ def average_on_bit_position_8bits(data: bytes) -> float:
         on = bits_on_indices(byte)
         total_sum += sum(on)
     return total_sum / (len(data) * 8)
+
+
+@mark
+def kolmogorov_complexity_estimate(data: bytes) -> float:
+    return len(zlib.compress(data)) / len(data)
+
+
+@mark
+def kolmogorov_complexity_estimate_binary(data: bytes) -> float:
+    return kolmogorov_complexity_estimate(bytes_to_bin_str(data).encode())
+
+
+@mark
+def compression_ratio_zlib(data: bytes) -> float:
+    return len(compress(data, CompressionType.ZLIB)) / len(data)
+
+
+@mark
+def compression_ratio_gzip(data: bytes) -> float:
+    return len(compress(data, CompressionType.GZIP)) / len(data)
+
+
+@mark
+def compression_ratio_lzma(data: bytes) -> float:
+    return len(compress(data, CompressionType.LZMA)) / len(data)
+
+
+@mark
+def compression_ratio_bz2(data: bytes) -> float:
+    return len(compress(data, CompressionType.BZ2)) / len(data)
+
+
+@mark
+def compression_ratio_tar(data: bytes) -> float:
+    return len(compress(data, CompressionType.TAR)) / len(data)
+
+
+@mark
+def compression_ratio_tar_gz(data: bytes) -> float:
+    return len(compress(data, CompressionType.TAR_GZ)) / len(data)
+
+
+@mark
+def compression_ratio_tar_bz2(data: bytes) -> float:
+    return len(compress(data, CompressionType.TAR_BZ2)) / len(data)
+
+
+@mark
+def compression_ratio_tar_xz(data: bytes) -> float:
+    return len(compress(data, CompressionType.TAR_XZ)) / len(data)
+
+
+# TODO: zstd
+
+
+@mark
+def percent_bytes_bit0_bit7_symmetry(data: bytes) -> float:
+    return sum([1 for byte in data if (byte & 1) and (byte & 0b10000000)]) / len(data)
+
+
+@mark
+def percent_bytes_bit0_bit7_symmetry(data: bytes) -> float:
+    return sum([1 for byte in data if (byte & 1) and (byte & 0b10000000)]) / len(data)
+
+
+def _set_up_percent_bit_symmetries_funcs():
+    # TODO: unit test these
+    for start_bit_idx_1 in range(0, 7):
+        for start_bit_idx_2 in range(start_bit_idx_1 + 1, 8):
+            for bit_len in range(1, 8 - start_bit_idx_2):
+                end_bit_idx_1 = start_bit_idx_1 + bit_len
+                end_bit_idx_2 = start_bit_idx_2 + bit_len
+
+                func_name = f"percent_of_bytes_bits_{start_bit_idx_1}_to_{end_bit_idx_1}_eq_{start_bit_idx_2}_to_{end_bit_idx_2}"
+                def _num_match(data, start_1, end_1, start_2, end_2):
+                    s = 0
+                    for byte in data:
+                        bin_byte = _bin(byte)
+                        if (
+                            bin_byte[start_1:end_1 + 1] ==
+                            bin_byte[start_2:end_2 + 1]):
+                            s += 1
+                    return s
+                def _get_func(start_1, end_1, start_2, end_2):
+                    return lambda data: 100.0 * _num_match(data, start_1, end_1, start_2,
+                                                           end_2) / len(data)
+                globals()[func_name] = mark(
+                    # This binds the proper idx values to the function returned
+                    # TODO: make sure other functions that do this globals()[...] thing properly bind values too (should
+                    # be verifiable with unit tests)
+                    _get_func(start_bit_idx_1, end_bit_idx_1, start_bit_idx_2, end_bit_idx_2)
+                )
+
+
+_set_up_percent_bit_symmetries_funcs()
+
+
+def _set_up_percent_bit_mask_match_funcs():
+    for mask in range(1, 256):
+        func_name = f"percent_of_bytes_matching_mask_{mask}"
+        globals()[func_name] = mark(
+            lambda data: 100.0 * sum([1 for byte in data if byte & mask == mask]) / len(data)
+        )
+
+
+_set_up_percent_bit_mask_match_funcs()
 
 
 # TODO: track occurrences and frequencies of all byte strings <= length 5? 4? 8?
@@ -499,6 +614,15 @@ def average_on_bit_position_8bits(data: bytes) -> float:
 #       idk what I mean by this
 # TODO: percent similarity between plaintext and ciphertext
 # TODO: check for recurring patterns of bits
+# TODO: bit transitions? Average per byte? Average byte 16 bits? 32 bits?
+# TODO: average bit on length? Per byte? Per 16 bits? Per 32 bits?
+# TODO: other bitwise symmetry percentages? E.g. first 2 bits equal last 2 bits? First bit equals last bit? First 3 bits equals last
+# 3 bits? 5 bits? More?
+# TODO: variance
+# TODO: std dev
+# TODO: XOR total
+# TODO: average XOR total per block
+# TODO: average block average
 
 
 def get_analysis_funcs() -> dict[str, Callable]:
@@ -510,5 +634,12 @@ def get_analysis_funcs() -> dict[str, Callable]:
 
 
 ANAL_FUNCS = get_analysis_funcs()
-print(ANAL_FUNCS)
+
+
+#print(ANAL_FUNCS)
 print(len(ANAL_FUNCS))
+# TODO: turn these into unit tests
+#print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5\x82\x00"))
+#print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3"))
+#print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\x01"))
+#print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5"))

@@ -1,5 +1,6 @@
 pycryptodome
 cryptography
+zstd
 pyyaml
 pandas
 numpy 
@@ -26,3 +27,10 @@ dask[complete]
 dask-lightgbm
 distributed
 ray[default]
+psycopg[binary]
+asyncpg  # async postgresql driver?
+pytest-postgresql
+alembic
+sqlalchemy[asyncio]
+pydantic
+sqlmodel
