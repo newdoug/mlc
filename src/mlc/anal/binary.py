@@ -557,23 +557,32 @@ def _set_up_percent_bit_symmetries_funcs():
                 end_bit_idx_2 = start_bit_idx_2 + bit_len
 
                 func_name = f"percent_of_bytes_bits_{start_bit_idx_1}_to_{end_bit_idx_1}_eq_{start_bit_idx_2}_to_{end_bit_idx_2}"
+
                 def _num_match(data, start_1, end_1, start_2, end_2):
                     s = 0
                     for byte in data:
                         bin_byte = _bin(byte)
                         if (
-                            bin_byte[start_1:end_1 + 1] ==
-                            bin_byte[start_2:end_2 + 1]):
+                            bin_byte[start_1 : end_1 + 1]
+                            == bin_byte[start_2 : end_2 + 1]
+                        ):
                             s += 1
                     return s
+
                 def _get_func(start_1, end_1, start_2, end_2):
-                    return lambda data: 100.0 * _num_match(data, start_1, end_1, start_2,
-                                                           end_2) / len(data)
+                    return (
+                        lambda data: 100.0
+                        * _num_match(data, start_1, end_1, start_2, end_2)
+                        / len(data)
+                    )
+
                 globals()[func_name] = mark(
                     # This binds the proper idx values to the function returned
                     # TODO: make sure other functions that do this globals()[...] thing properly bind values too (should
                     # be verifiable with unit tests)
-                    _get_func(start_bit_idx_1, end_bit_idx_1, start_bit_idx_2, end_bit_idx_2)
+                    _get_func(
+                        start_bit_idx_1, end_bit_idx_1, start_bit_idx_2, end_bit_idx_2
+                    )
                 )
 
 
@@ -584,7 +593,9 @@ def _set_up_percent_bit_mask_match_funcs():
     for mask in range(1, 256):
         func_name = f"percent_of_bytes_matching_mask_{mask}"
         globals()[func_name] = mark(
-            lambda data: 100.0 * sum([1 for byte in data if byte & mask == mask]) / len(data)
+            lambda data: 100.0
+            * sum([1 for byte in data if byte & mask == mask])
+            / len(data)
         )
 
 
@@ -600,7 +611,9 @@ def xor_all_bytes(data: bytes) -> int:
 
 
 @mark
-def average_xor_per_block(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def average_xor_per_block(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     sums = 0
     num_blocks = 0
     for block in blocks(data, block_size_bytes=block_size_bytes):
@@ -610,7 +623,9 @@ def average_xor_per_block(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZ
 
 
 @mark
-def average_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def average_block_average(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     sums = 0
     num_blocks = 0
     for block in blocks(data, block_size_bytes=block_size_bytes):
@@ -632,7 +647,9 @@ def standard_deviation(data: bytes) -> float:
 
 
 @mark
-def average_block_variance(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def average_block_variance(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     variances = 0
     num_blocks = 0
     for block in blocks(data, block_size_bytes=block_size_bytes):
@@ -642,7 +659,9 @@ def average_block_variance(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SI
 
 
 @mark
-def average_block_standard_deviation(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def average_block_standard_deviation(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     deviations = 0
     num_blocks = 0
     for block in blocks(data, block_size_bytes=block_size_bytes):
@@ -689,10 +708,10 @@ def get_analysis_funcs() -> dict[str, Callable]:
 ANAL_FUNCS = get_analysis_funcs()
 
 
-#print(ANAL_FUNCS)
+# print(ANAL_FUNCS)
 print(len(ANAL_FUNCS))
 # TODO: turn these into unit tests
-#print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5\x82\x00"))
-#print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3"))
-#print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\x01"))
-#print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5"))
+# print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5\x82\x00"))
+# print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3"))
+# print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\x01"))
+# print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5"))
