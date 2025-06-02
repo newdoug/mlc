@@ -1,0 +1,7 @@
+pytest  # Test framework
+pytest-mock  # Wrapper around unittest.mock (mocking lib) for pytest usage.
+pytest-cov  # Gives test results results to code coverage tool
+pytest-pydantic  # Automatically validates pydantic models?
+pytest-random-order  # Provide option to execute tests in a random order
+pytest-xdist  # Distributed (across CPUs) testing
+tox
