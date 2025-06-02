@@ -13,9 +13,7 @@ class TestRandIntInRange(unittest.TestCase):
 
     def _run_range_test(self, int_range, iterations: int = 1000):
         for iteration in range(iterations):
-            with self.subTest(
-                iteration=iteration, iterations=iterations, int_range=int_range
-            ):
+            with self.subTest(iteration=iteration, iterations=iterations, int_range=int_range):
                 value = rand_int_in_range(int_range[0], int_range[1])
                 self.assertTrue(value in range(int_range[0], int_range[1]))
 
@@ -54,7 +52,7 @@ class TestRandIntInRange(unittest.TestCase):
         for _ in range(100000):
             if 2 == rand_int_in_range(2, 10):
                 # Success case
-                return False
+                return
         self.assertTrue(False, msg="Low range never occurred: may not be possible")
 
     def test_low_range_0_is_possible(self):
@@ -64,15 +62,13 @@ class TestRandIntInRange(unittest.TestCase):
         for _ in range(100000):
             if 0 == rand_int_in_range(0, 10):
                 # Success case
-                return False
+                return
         self.assertTrue(False, msg="Low range (0) never occurred: may not be possible")
 
     def test_high_range_is_not_possible(self):
         """Test that high value in range is exclusive"""
         for _ in range(1000):
             if rand_int_in_range(2, 10) > 9:
-                self.assertTrue(
-                    False, msg="Low range never occurred: may not be possible"
-                )
+                self.assertTrue(False, msg="Low range never occurred: may not be possible")
         # Success case
-        return False
+        return

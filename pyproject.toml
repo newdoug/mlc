@@ -10,7 +10,7 @@ packages = [{ include = "src/mlc" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-#pycryptodome
+pycryptodome = ">=3.23.0"
 #cryptography
 #zstd
 #pyyaml
@@ -63,8 +63,14 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "-ra"
+#filterwarnings = "error"
+xfail_strict = true
+addopts = [
+    "--import-mode=importlib",
+    "-ra"
+]
 testpaths = ["tests"]
+pythonpath = ["src"]
 
 [tool.black]
 line-length = 100

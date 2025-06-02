@@ -18,4 +18,6 @@ class TestAverageByte(unittest.TestCase):
         self.assertEqual(average_byte(b"\x11" * 20), 17.0)
         self.assertEqual(average_byte_int(b"\x11" * 20), 17)
         self.assertEqual(average_byte(b"\xfe" * 20), 254.0)
-        self.assertEqual(average_byte_int(b"\xfe" * 20), 255)
+        self.assertEqual(average_byte_int(b"\xfe" * 20), 254)
+        self.assertEqual(average_byte(b"\xff" * 20), 255.0)
+        self.assertEqual(average_byte_int(b"\xff" * 20), 255)

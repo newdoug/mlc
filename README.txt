@@ -345,3 +345,11 @@ poetry run black .
 ```
 poetry run pytest
 ```
+
+## Adding pip pakages after install
+
+Packages that aren't in the pyproject.toml that you just want one-off installed.
+
+```
+poetry self add <package_name>
+```
