@@ -6,18 +6,9 @@ authors = ["Silky <sbk7826@g.rit.edu>"]
 license = "MIT"
 readme = "README.txt"
 packages = [{ include = "src/mlc" }]
-# requires-python = ">=3.8"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-pycryptodome = ">=3.23.0"
-#cryptography
-#zstd
-#pyyaml
-#pandas
-#numpy
-#scikit-learn
-#xgboost
+python = "^3.12"
 ## Make sure to install Dask with distributed and LightGBM with Dask support?
 ## Choose roles:
 ## One machine = Scheduler (start with bash command: dask-scheduler)
@@ -27,36 +18,43 @@ pycryptodome = ">=3.23.0"
 ## from dask.distributed import Client
 ## client = Client("tcp://192.168.1.100:8786")
 ## dask-dashboard: http://<scheduler-ip>:8787
-#lightgbm
-#shap
-#lime
-#optuna
-#boruta
-#seaborn
-#matplotlib
-#umap-learn
 #dask[complete]
 #dask-lightgbm
-#distributed
-#ray[default]
-#psycopg[binary]
-#asyncpg  # async postgresql driver?
-#pytest-postgresql
-#alembic
-#sqlalchemy[asyncio]
-#pydantic
-#sqlmodel
+pycryptodome = "^3.23.0"
+cryptography = "^45.0.3"
+zstd = "^1.5.7.0"
+pyyaml = "^6.0.2"
+pandas = "^2.2.3"
+numpy = "^2.2.6"
+scikit-learn = "^1.6.1"
+xgboost = "^3.0.2"
+lightgbm = "^4.6.0"
+shap = "^0.47.2"
+lime = "^0.2.0.1"
+optuna = "^4.3.0"
+joblib = "^1.5.1"
+boruta = "^0.4.3"
+seaborn = "^0.13.2"
+matplotlib = "^3.10.3"
+umap-learn = "^0.5.7"
+distributed = "^2025.5.1"
+ray = {extras = ["default"], version = "^2.46.0"}
+psycopg = {extras = ["binary"], version = "^3.2.9"}
+asyncpg = "^0.30.0"
+alembic = "^1.16.1"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.41"}
+pydantic = "^2.11.5"
+sqlmodel = "^0.0.24"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
-black = "^24.0"
-pre-commit = "^3.0"
-#pytest-mock  # Wrapper around unittest.mock (mocking lib) for pytest usage.
-#pytest-cov  # Gives test results results to code coverage tool
-#pytest-pydantic  # Automatically validates pydantic models?
-#pytest-random-order  # Provide option to execute tests in a random order
-#pytest-xdist  # Distributed (across CPUs) testing
-#tox
+pytest = "^8.4.0"
+black = "^25.1.0"
+pre-commit = "^4.2.0"
+pytest-mock = "^3.14.1"
+pytest-cov = "^6.1.1"
+pytest-random-order = "^1.1.1"
+pytest-xdist = "^3.7.0"
+tox = "^4.26.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -67,11 +65,14 @@ build-backend = "poetry.core.masonry.api"
 xfail_strict = true
 addopts = [
     "--import-mode=importlib",
-    "-ra"
+    "-rA",
+    "--random-order",
+    "--full-trace",
+    "-v"
 ]
 testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.black]
 line-length = 100
-target-version = ['py38']
+target-version = ["py312"]

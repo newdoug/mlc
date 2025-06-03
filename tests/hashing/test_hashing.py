@@ -10,9 +10,7 @@ from mlc.hashing.hashing import hash_data, HashType as HT
 class TestHashData(unittest.TestCase):
     """Tests for the `hash_data` function"""
 
-    def _sim_test(
-        self, hash_type: HT, data: bytes, expected: Union[bytes, str]
-    ) -> None:
+    def _sim_test(self, hash_type: HT, data: bytes, expected: Union[bytes, str]) -> None:
         """Simple common hash test"""
         if isinstance(expected, bytes):
             expected = expected.hex().lower()
