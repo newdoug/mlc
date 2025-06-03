@@ -15,6 +15,7 @@ a.out
 
 *.sw[a-z]
 *.log
+*.csv
 
 # Various lock files, especially poetry.lock
 *.lock

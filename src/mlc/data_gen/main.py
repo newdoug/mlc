@@ -7,27 +7,42 @@ worth it. If it is worth it, then we can do it later.
 import argparse
 import enum
 
-# TODO: multiprocessing
 # TODO: pass work jobs to distributed processing stuff. Especially large
 #       jobs and especially since data will go into a DB.
 import multiprocessing
 import os
 import sys
-from typing import Iterable, List
+import tempfile
+from typing import Iterable, List, Tuple
 
-from mlc.data_gen.data_type_base import DataTypeSettingKey
-from mlc.data_gen.random_data import RandomDataType, rand_int_in_range
 from mlc.compression import compress, CompressionType
 from mlc.crypto.cipher_types import CipherType
+from mlc.data_gen.data_type_base import DataTypeSettingKey
+from mlc.data_gen.random_data import RandomDataType, rand_int_in_range
+from mlc.utils.io import eprint
+
+
+def _gen_out_filename() -> str:
+    with tempfile.NamedTemporaryFile(
+        prefix="gen_data_", suffix=".csv", delete=False, dir=os.getcwd()
+    ) as temp_file:
+        return temp_file.name
 
 
 def _get_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Generate plaintext and ciphertext data for test and " "training data sets"
+        description="Generate plaintext and ciphertext data for test and training data sets"
+    )
+    # TODO: update this to support split output files, direct to DB, to a dir with automatically split files, etc.
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Filename to write the output file to. If not provided, a default filename will be generated",
+        type=str,
     )
     parser.add_argument(
         "--random-data",
-        help="Generate random data of lengths",
+        help="Generate these types of random dat",
         nargs="+",
         type=str,
         choices=RandomDataType.names(),
@@ -44,12 +59,14 @@ def _get_argparser() -> argparse.ArgumentParser:
         nargs=2,
         type=int,
     )
+    # Compression arguments
     parser.add_argument(
         "--compress",
         help="Whether or not to compress generated plaintexts and if so, "
         "what compression algorithm",
         choices=CompressionType.names(),
     )
+    # Encryption arguments
     parser.add_argument(
         "--cipher",
         help="Cipher(s) to use to encrypt data. If compression is enabled, "
@@ -59,7 +76,6 @@ def _get_argparser() -> argparse.ArgumentParser:
         nargs="+",
         default=[],
     )
-    # Encryption arguments
     parser.add_argument(
         "--key-size",
         help="Key size (in bits) to use for encryption",
@@ -81,6 +97,7 @@ def _gen_plaintext_samples(
         )
 
 
+# TODO: finish data gen (e.g., here)
 def _compress_samples(
     samples: Iterable[bytes], compression_type: CompressionType
 ) -> Iterable[bytes]:
@@ -99,6 +116,7 @@ def main(args: List[str]) -> int:
 
     parser = _get_argparser()
     parsed_args = parser.parse_args(args)
+    out_filename = parsed_args.output or _gen_out_filename()
 
     # Some validation
     if parsed_args.cipher or parsed_args.key_size:
@@ -116,12 +134,18 @@ def main(args: List[str]) -> int:
             )
             return 1
 
-        for data_type in parsed_args.random_data:
-            _gen_plaintext_samples(
-                parsed_args.num_samples,
-                parsed_args.size_range,
-                RandomDataType(data_type),
-            )
+        print(f"Writing to file '{out_filename}'")
+        with open(out_filename, "w") as handle:
+            for data_type in parsed_args.random_data:
+                for data in _gen_plaintext_samples(
+                    parsed_args.num_samples,
+                    parsed_args.size_range,
+                    RandomDataType[data_type],
+                ):
+                    handle.write(data.hex())
+                    handle.write("\n")
+        print(f"Wrote data to file '{out_filename}'")
+
     return 0
 
 
