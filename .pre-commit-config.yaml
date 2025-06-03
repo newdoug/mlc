@@ -1,0 +1,80 @@
+repos:
+  - repo: git@github.com:psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+
+  - repo: git@github.com:pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: ["--fix=auto"]
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+        args: ["--markdown-linebreak-ext=md"]
+
+  # Shell script linter
+  - repo: git@github.com:koalaman/shellcheck-precommit
+    rev: v0.10.0
+    hooks:
+      - id: shellcheck
+
+  # Check spelling in code
+  - repo: git@github.com:codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+    - id: codespell
+      additional_dependencies:
+        - tomli
+
+  # Check jsonschema files for common configuration issues
+  - repo: git@github.com:python-jsonschema/check-jsonschema
+    rev: 0.33.0
+    hooks:
+      - id: check-github-workflows
+        args: ["--verbose"]
+
+  # GitHub Actions linter
+  - repo: git@github.com:rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint
+
+  # C/C++ formatter
+  - repo: git@github.com:pre-commit/mirrors-clang-format
+    rev: v20.1.5
+    hooks:
+      - id: clang-format
+        args: ["--style=LLVM"]
+        types_or: [c++, c, cuda]
+        additional_dependencies: [clang-format]
+
+  # JavaScript fixer (requires Node.js)
+  - repo: git@github.com:pre-commit/mirrors-fixmyjs
+    rev: v2.0.0
+    hooks:
+      - id: fixmyjs
+        additional_dependencies: [fixmyjs]
+
+  # CSS linter (requires Node.js)
+  - repo: git@github.com:pre-commit/mirrors-csslint
+    rev: v1.0.5
+    hooks:
+      - id: csslint
+        additional_dependencies: [csslint]

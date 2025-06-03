@@ -55,6 +55,8 @@ pytest-cov = "^6.1.1"
 pytest-random-order = "^1.1.1"
 pytest-xdist = "^3.7.0"
 tox = "^4.26.0"
+codespell = "^2.4.1"
+check-jsonschema = "^0.33.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -76,3 +78,8 @@ pythonpath = ["src"]
 [tool.black]
 line-length = 100
 target-version = ["py312"]
+
+[tool.codespell]
+skip = '*.po,*.ts,./src/3rdParty,./src/Test'
+count = true
+quiet-level = 3
