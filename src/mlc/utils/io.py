@@ -1,27 +1,17 @@
 """Input/output and logging tools"""
 
-from datetime import datetime as dt
+from datetime import UTC, datetime as dt
 import logging
 import logging.handlers
 import os
 import shutil
 import sys
 import tarfile
-from typing import List, Union
+from typing import Union
 
 
-__all__ = [
-    "DEFAULT_LOGGER_NAME",
-    "eprint",
-    "LOG",
-    "LOG_ARCHIVE_DIR",
-    "LOG_DIR",
-    "LOG_LEVEL",
-]
-
-
-# The logger object
-LOG = None
+# The logger object that most are expected to use and import
+LOG: logging.Logger = logging.getLogger(__name__)
 SOURCE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 LOG_DIR = os.path.join(SOURCE_DIR, "logs")
 LOG_ARCHIVE_DIR = os.path.join(LOG_DIR, "archive")
@@ -34,18 +24,25 @@ DEFAULT_LOG_FORMAT_STR = (
 DEFAULT_LOGGER_NAME = "MLC"
 # Applies to asctime. Then msecs in the format string gets milliseconds
 LOG_RECORD_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-LOG_LEVEL = logging.DEBUG if os.getenv("DEBUG", "") else logging.INFO
+SYS_LOG_PATH = "/dev/log"
+LOG_LEVEL_STR_TO_INT = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+}
 
 
 def _path_dt() -> str:
-    return f"{int(dt.utcnow().timestamp() * 1000000)}"
+    return f"{int(dt.now(UTC).timestamp() * 1000000)}"
 
 
 def _generate_log_filename() -> str:
     return f"{LOG_DIR}/{DEFAULT_LOGGER_NAME}_{_path_dt()}.log"
 
 
-def _compress_logs(log_dir: str, archive_dir: str, log_archive_chunk_size: int = 100) -> None:
+def compress_logs(log_dir: str, archive_dir: str, log_archive_chunk_size: int = 100) -> None:
     if not os.path.isdir(log_dir):
         # Nothing to compress
         return
@@ -53,7 +50,7 @@ def _compress_logs(log_dir: str, archive_dir: str, log_archive_chunk_size: int =
 
     chunk_num = 0
 
-    def _compress_files(filenames: List[str]):
+    def _compress_files(filenames: list[str]):
         arcname = f"{DEFAULT_LOGGER_NAME}_log_archive_{chunk_num}_{_path_dt()}"
         os.makedirs(arcname, mode=0o750, exist_ok=True)
         for filename in filenames:
@@ -82,19 +79,50 @@ def _compress_logs(log_dir: str, archive_dir: str, log_archive_chunk_size: int =
             chunk_num += 1
 
 
-# pylint: disable=too-many-arguments
-def _set_up_logger(
+def try_compress_logs(log_dir: str, archive_dir: str, log_archive_chunk_size: int = 100) -> None:
+    try:
+        compress_logs(LOG_DIR, LOG_ARCHIVE_DIR)
+    except (OSError, ValueError) as exc:
+        eprint(f"Failed to compress log files in '{LOG_DIR}': {exc}")
+
+
+def _create_trace_log_level(logger: logging.Logger, level_num: int = logging.DEBUG - 5) -> None:
+    # Check if already done on this logger
+    if hasattr(logging, "TRACE"):
+        return
+    logging.TRACE = level_num
+    logging.addLevelName(level_num, "TRACE")
+    LOG_LEVEL_STR_TO_INT["TRACE"] = level_num
+
+    def _bound_log_method(self: logging.Logger, msg, *args, **kwargs):
+        if self.isEnabledFor(level_num):
+            # Otherwise, stacklevel=1 and the logged function name is this local function, which isn't helpful
+            kwargs["stacklevel"] = kwargs.get("stacklevel", 1) + 1
+            self._log(level_num, msg, args, **kwargs)
+
+    logging.getLoggerClass().trace = _bound_log_method
+
+    def _static_log_func(msg, *args, **kwargs):
+        logging.log(level_num, msg, *args, **kwargs)
+
+    logging.trace = _static_log_func
+
+
+def set_up_logger(
+    compress_old_logs: bool = True,
+    log_dir: str = LOG_DIR,
+    archive_dir: str = LOG_ARCHIVE_DIR,
     use_stdout: bool = True,
     use_file: Union[bool, str] = True,
     use_syslog: bool = True,
-    log_level=logging.DEBUG,
+    log_level: Union[int, str] = logging.INFO,
     logger_name: str = DEFAULT_LOGGER_NAME,
     log_format: str = DEFAULT_LOG_FORMAT_STR,
-) -> None:
-    # pylint: disable=global-statement
-    global LOG
-
-    LOG = logging.getLogger(logger_name)
+) -> logging.Logger:
+    LOG.name = logger_name
+    _create_trace_log_level(LOG)
+    if isinstance(log_level, str):
+        log_level = LOG_LEVEL_STR_TO_INT[log_level.strip().upper()]
     LOG.setLevel(log_level)
     formatter = logging.Formatter(log_format, LOG_RECORD_DATETIME_FORMAT)
 
@@ -112,8 +140,8 @@ def _set_up_logger(
 
     if log_filename:
         # Ensure directory where logs will be written to is created
-        os.makedirs(LOG_DIR, mode=0o750, exist_ok=True)
-        os.makedirs(LOG_ARCHIVE_DIR, mode=0o750, exist_ok=True)
+        os.makedirs(log_dir, mode=0o750, exist_ok=True)
+        os.makedirs(archive_dir, mode=0o750, exist_ok=True)
 
         handler = logging.FileHandler(log_filename)
         handler.setFormatter(formatter)
@@ -124,8 +152,12 @@ def _set_up_logger(
         platform = sys.platform.lower()
         handler = None
         if platform.endswith("nux") or platform.endswith("nix"):
-            if hasattr(logging.handlers, "SysLogHandler"):
-                handler = logging.handlers.SysLogHandler(address="/dev/log")
+            if (
+                hasattr(logging.handlers, "SysLogHandler")
+                and os.path.exists(SYS_LOG_PATH)
+                and os.access(SYS_LOG_PATH, os.R_OK)
+            ):
+                handler = logging.handlers.SysLogHandler(address=SYS_LOG_PATH)
         elif hasattr(logging.handlers, "NTEventLogHandler"):
             handler = logging.handlers.NTEventLogHandler(logger_name)
 
@@ -133,6 +165,8 @@ def _set_up_logger(
             handler.setFormatter(formatter)
             handler.setLevel(log_level)
             LOG.addHandler(handler)
+
+    return LOG
 
 
 def eprint(*args, **kwargs) -> None:
@@ -144,20 +178,15 @@ def eprint(*args, **kwargs) -> None:
     print(*args, **kwargs)
 
 
-try:
-    _compress_logs(LOG_DIR, LOG_ARCHIVE_DIR)
-except (OSError, ValueError) as exc:
-    eprint(f"Failed to compress log files in '{LOG_DIR}': {exc}")
-
-_set_up_logger(log_level=LOG_LEVEL)
-
-
 if __name__ == "__main__":
+    set_up_logger(log_level=os.getenv("LOG_LEVEL", logging.DEBUG))
 
     def _main():
+        LOG.trace("Test TRACE message")
         LOG.debug("Test DEBUG message")
         LOG.info("Test INFO message")
         LOG.warning("Test WARNING message")
         LOG.error("Test ERROR message")
+        LOG.critical("Test CRITICAL message")
 
     _main()

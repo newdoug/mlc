@@ -4,3 +4,7 @@ Ideas and basic development started around 01/2025.
 Development really started happening more in June.
 The first main idea was "Given lots of ciphertexts, determine the encryption algorithm/cipher", which seems not terribly far from feasible.
 The next ideas were a bit more unlikely, basically "Given lots of ciphertexts, try to determine what kind of data the plaintext is or even try to decrypt it entirely or try to determine the key, purely with ML." I think this is technically "possible", but not reasonably feasible. There is some algorithm (the cipher) with some set of bytes (key) (along with maybe a couple of other things like IV, HMAC, etc.) that when combined yield the correct plaintext. The ML algorithm could basically learn enough that it simulates this algorithm or something very close.
+Then ideas came that made me want to also turn this into possibly a generic data analysis and categorization tool for
+pretty much any kind of data. Packet captures, network visualizations and analysis (security/vulnerability assessments,
+etc.), binwalk on steroids, PE analysis, ELF analysis, static analysis of binaries and other things, data visualization
+of all results, etc.

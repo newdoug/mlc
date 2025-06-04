@@ -1,3 +1,14 @@
+TODO now:
+
+* Implement logs to DB hook, probably clean up logger a bit
+* Decide on format for data generation output. Make sure it's expandable for future.
+* Run some of the analysis on some small amounts of data
+* Write some unit tests for feature function/analysis
+* Remove all __all__ declarations
+* Remove pylint: disable things
+* Replace all dt.utcnow() with dt.now(tz.utc)
+
+
 Concept:
 
 * Basic steps:
