@@ -28,7 +28,7 @@ Components:
 ** Generate feature calculation
 ** Model training
 ** Everything, but for each thing we're trying to guess (e.g., one machine for one thing we're trying to guess (one machine for file type, one machine for cipher type, etc.), but probably more than 1 machine for each if we're getting serious).
-** Fetaure selection
+** Feature selection
 ** Data generation
 
 
@@ -42,7 +42,7 @@ Components:
 
 * Information to track:
 ** About plaintext:
-*** Did we geerate it?
+*** Did we generate it?
 *** What kind of data is it? (see below for types of data/files)
 *** Where is it from if we didn't generate it? In general, source = ?
 ** About ciphertext
@@ -90,7 +90,7 @@ Components:
     * Could easily turn it into a website (don't keep data stored in case it's
       something illegal) with ads or some other monetization scheme - make some money.
     * If developing it, running "strings" on input and taking note and/or
-      existance of strings and ocation(s) would be useful.
+      existence of strings and ocation(s) would be useful.
       * Keeping track of certain portions of files would probably be useful too.
         Especially first few bytes (where magic numbers/strings/values usually
         are). Magic elsewhere (in sub-structures, for example) wouldn't be as
@@ -98,7 +98,8 @@ Components:
       * binwalk that recursively finds stuff may primarily look for magic. How
         would that work here?
 
-* Maybe turn certain things or everything into services so that we can constantly be generating and/or obtaining data and running it trough the pipeline to other steps and constantly improving the model.
+* Maybe turn certain things or everything into services so that we can constantly be generating and/or obtaining data
+  and running it through the pipeline to other steps and constantly improving the model.
 ** Being able to use the model for classification while submitting training data?
 
 
@@ -253,7 +254,7 @@ learning to the model.
 * Learn with keys too. E.g., use key attributes/features as part of the learning
   model. May be able to determine certain sets of bits of the key at least.
 * Does every bit of input affect every bit of output? To what degree? If not, then we can brute force only certain bits (with known plaintext).
-  * Initial interpretation of this quesiton: Bit of plaintext (input) vs bit of
+  * Initial interpretation of this question: Bit of plaintext (input) vs bit of
     ciphertext (output).
   * Another interpretation: Bit of key vs bit of output. Bit of output could be:
     entire ciphertext? Or a single block (in the case of block ciphers) or bit
@@ -264,7 +265,7 @@ learning to the model.
 * See how audio matching machine learning/matching works. Find patterns in
   waveform and matches them up with input test signal? Could be useful for
   feature creation and/or pattern determination on ciphertexts.
-* Add an "auto-break" flag once it hsa a guess at what the input looks like. If
+* Add an "auto-break" flag once it has a guess at what the input looks like. If
   the result is some kind of cipher. If it's some breakable cipher like shift,
   Caesar, substitution, etc., it'll be easy, otherwise, probably just brute
   force unless we come up with full crypto breaking methods for that cipher
@@ -287,6 +288,11 @@ Permuting C/c++ and assembly.
 Start with something similar to the actual algorithm.
 Also try bad transformations to see if anything easy somehow works
 Aes, chacha20, rsa, etc.
+
+Idea if not already mentioned above: If we can get any kind of information about what the plaintext is underneath a
+given ciphertext, it could make other attacks more feasible like chosen plaintext or simply brute forcing keys (can at
+least verify if any blocks *might* have successfully been decrypted (if looks like the right kind of plaintext we
+determined)).
 
 
 # Commands
@@ -346,10 +352,15 @@ poetry run black .
 poetry run pytest
 ```
 
-## Adding pip pakages after install
+## Adding pip packages after install
 
 Packages that aren't in the pyproject.toml that you just want one-off installed.
 
 ```
 poetry self add <package_name>
+```
+
+If you want them to be added to `pyptoject.toml`:
+```
+poetry add <package_name>
 ```
