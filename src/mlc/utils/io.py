@@ -1,5 +1,6 @@
 """Input/output and logging tools"""
 
+from dataclasses import dataclass
 from datetime import UTC, datetime as dt
 import logging
 import logging.handlers
@@ -7,7 +8,9 @@ import os
 import shutil
 import sys
 import tarfile
-from typing import Union
+from typing import Optional, Union
+
+import asyncio
 
 
 # The logger object that most are expected to use and import
@@ -108,29 +111,84 @@ def _create_trace_log_level(logger: logging.Logger, level_num: int = logging.DEB
     logging.trace = _static_log_func
 
 
+@dataclass
+class ElasticsearchLogSettings:
+    url: str
+    username: str
+    password: str
+
+
+def _add_es_handler(logger: logging.Logger, settings: ElasticsearchLogSettings):
+    from elasticsearch import AsyncElasticsearch
+
+    class ElasticsearchAsyncHandler(logging.Handler):
+        def __init__(self, es_url: str, index_name: str, username: str, password: str):
+            super().__init__()
+            # TODO: if getting certs all proper, probably stop settings verify_certs=False and ssl_show_warn=False
+            self.es = AsyncElasticsearch(
+                es_url, basic_auth=(username, password), verify_certs=False, ssl_show_warn=False
+            )
+            self.index_name = index_name
+            self._loop = asyncio.new_event_loop()
+
+        async def async_emit(self, record):
+            doc = {
+                "@timestamp": dt.now(UTC).isoformat(),
+                "log.level": record.levelname,
+                "log.levelno": record.levelno,
+                "log.logger": record.name,
+                "log.message": record.getMessage(),
+                "log.pathname": record.pathname,
+                "log.lineno": record.lineno,
+                "log.exc_info": str(record.exc_info),
+                "log.exc_text": str(record.exc_text),
+                "log.filename": record.filename,
+                "log.funcName": record.funcName,
+                "log.processName": record.processName,
+            }
+            await self.es.index(index=self.index_name, document=doc)
+
+        def emit(self, record):
+            self._loop.run_until_complete(self.async_emit(record))
+
+        def close(self):
+            self._loop.run_until_complete(self.es.close())
+            self._loop.close()
+
+    # Index name must be lowercase. Kind of a strange restriction, but OK.
+    handler = ElasticsearchAsyncHandler(
+        settings.url, f"{logger.name}_logs".lower(), settings.username, settings.password
+    )
+    handler.setLevel(logger.level)
+    logger.addHandler(handler)
+
+
 def set_up_logger(
+    logger: Optional[logging.Logger] = None,
     compress_old_logs: bool = True,
     log_dir: str = LOG_DIR,
     archive_dir: str = LOG_ARCHIVE_DIR,
     use_stdout: bool = True,
     use_file: Union[bool, str] = True,
     use_syslog: bool = True,
+    use_es: Optional[ElasticsearchLogSettings] = None,
     log_level: Union[int, str] = logging.INFO,
     logger_name: str = DEFAULT_LOGGER_NAME,
     log_format: str = DEFAULT_LOG_FORMAT_STR,
 ) -> logging.Logger:
-    LOG.name = logger_name
-    _create_trace_log_level(LOG)
+    logger = logger or LOG
+    logger.name = logger_name
+    _create_trace_log_level(logger)
     if isinstance(log_level, str):
         log_level = LOG_LEVEL_STR_TO_INT[log_level.strip().upper()]
-    LOG.setLevel(log_level)
+    logger.setLevel(log_level)
     formatter = logging.Formatter(log_format, LOG_RECORD_DATETIME_FORMAT)
 
     if use_stdout:
         handler = logging.StreamHandler()
         handler.setFormatter(formatter)
         handler.setLevel(log_level)
-        LOG.addHandler(handler)
+        logger.addHandler(handler)
 
     log_filename = None
     if use_file is True:
@@ -146,7 +204,7 @@ def set_up_logger(
         handler = logging.FileHandler(log_filename)
         handler.setFormatter(formatter)
         handler.setLevel(log_level)
-        LOG.addHandler(handler)
+        logger.addHandler(handler)
 
     if use_syslog:
         platform = sys.platform.lower()
@@ -164,9 +222,12 @@ def set_up_logger(
         if handler:
             handler.setFormatter(formatter)
             handler.setLevel(log_level)
-            LOG.addHandler(handler)
+            logger.addHandler(handler)
 
-    return LOG
+    if use_es:
+        _add_es_handler(logger, use_es)
+
+    return logger
 
 
 def eprint(*args, **kwargs) -> None:
@@ -179,7 +240,16 @@ def eprint(*args, **kwargs) -> None:
 
 
 if __name__ == "__main__":
-    set_up_logger(log_level=os.getenv("LOG_LEVEL", logging.DEBUG))
+    es_host = os.getenv("ES_HOST", "localhost")
+    es_port = os.getenv("ES_PORT", "9200")
+    es_username = os.getenv("ES_USERNAME", "elastic")
+    es_password = os.getenv("ES_PASSWORD", "")
+    set_up_logger(
+        log_level=os.getenv("LOG_LEVEL", logging.DEBUG),
+        use_es=ElasticsearchLogSettings(
+            url=f"https://{es_host}:{es_port}", username=es_username, password=es_password
+        ),
+    )
 
     def _main():
         LOG.trace("Test TRACE message")

@@ -45,6 +45,8 @@ alembic = "^1.16.1"
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.41"}
 pydantic = "^2.11.5"
 sqlmodel = "^0.0.24"
+elasticsearch = "^9.0.1"
+aiohttp = "^3.12.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
