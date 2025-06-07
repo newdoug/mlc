@@ -4,11 +4,6 @@ import enum
 from typing import List
 
 
-__all__ = [
-    "BetterEnum",
-]
-
-
 class BetterEnum(enum.Enum):
     """Slightly improved enum class. Just adds a couple conveniences"""
 

@@ -6,13 +6,6 @@ from typing import Callable, Dict
 from mlc.utils.better_enum import BetterEnum
 
 
-__all__ = [
-    "calc_checksum",
-    "CHECKSUM_TYPE_TO_FUNC",
-    "ChecksumType",
-]
-
-
 class ChecksumType(BetterEnum):
     """Type of checksum"""
 

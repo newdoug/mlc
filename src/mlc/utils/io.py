@@ -240,18 +240,18 @@ def eprint(*args, **kwargs) -> None:
 
 
 if __name__ == "__main__":
-    es_host = os.getenv("ES_HOST", "localhost")
-    es_port = os.getenv("ES_PORT", "9200")
-    es_username = os.getenv("ES_USERNAME", "elastic")
-    es_password = os.getenv("ES_PASSWORD", "")
-    set_up_logger(
-        log_level=os.getenv("LOG_LEVEL", logging.DEBUG),
-        use_es=ElasticsearchLogSettings(
-            url=f"https://{es_host}:{es_port}", username=es_username, password=es_password
-        ),
-    )
 
     def _main():
+        es_host = os.getenv("ES_HOST", "localhost")
+        es_port = os.getenv("ES_PORT", "9200")
+        es_username = os.getenv("ES_USERNAME", "elastic")
+        es_password = os.getenv("ES_PASSWORD", "")
+        set_up_logger(
+            log_level=os.getenv("LOG_LEVEL", logging.DEBUG),
+            use_es=ElasticsearchLogSettings(
+                url=f"https://{es_host}:{es_port}", username=es_username, password=es_password
+            ),
+        )
         LOG.trace("Test TRACE message")
         LOG.debug("Test DEBUG message")
         LOG.info("Test INFO message")

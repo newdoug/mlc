@@ -12,13 +12,6 @@ from mlc.data_gen.random_data import (
 )
 
 
-__all__ = [
-    "JsonGenerator",
-    "rand_json",
-    "rand_json_str",
-]
-
-
 class JsonGenerator:
     """Generates random JSON"""
 

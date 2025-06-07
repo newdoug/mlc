@@ -7,11 +7,6 @@ from mlc.data_gen.data_type_base import DataTypeBase, DataTypeSettingKey
 from mlc.data_gen.misc.json_generator import rand_json_str
 
 
-__all__ = [
-    "MiscFileDataType",
-]
-
-
 class MiscFileDataType(DataTypeBase):
     """Miscellaneous/Config (sometimes) and other file formats (e.g., YAML,
     JSON, base64, etc.)

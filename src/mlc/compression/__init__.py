@@ -16,13 +16,6 @@ from mlc.utils.better_enum import BetterEnum
 import zstd
 
 
-__all__ = [
-    "CompressionType",
-    "compress",
-    "decompress",
-]
-
-
 def _to_tar_data(data: bytes, open_flags: str = "w") -> bytes:
     """tars up `data` and returns the tar contents.
     Supports both uncompressed and compressed based on `open_flags`
