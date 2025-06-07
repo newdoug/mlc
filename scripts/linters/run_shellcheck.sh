@@ -6,6 +6,7 @@ fi
 
 DST="$1"
 if [ -z "$DST" ]; then
+  printf "No destination dir entered, using current dir by default\\n"
   DST="$(pwd)"
 else
   if [ ! -d "$DST" ]; then
@@ -15,7 +16,9 @@ else
 fi
 
 SHELLCHECK_CMD="shellcheck"
+# Boolean
 ALL_PASSED=1
+# Integer
 NUM_FILES=0
 FAILED_FILENAMES=()
 
@@ -32,7 +35,7 @@ if [ "${ALL_PASSED}" = "1" ]; then
   exit 0
 fi
 
-printf "%d files failed lint check\\n" "${#FAILED_FILENAMES[@]}"
+printf "%d out of %d files failed lint check:\\n" "${#FAILED_FILENAMES[@]}" "${NUM_FILES}"
 for FAILED_FILENAME in "${FAILED_FILENAMES[@]}"; do
   printf "\t%s\n" "${FAILED_FILENAME}"
 done

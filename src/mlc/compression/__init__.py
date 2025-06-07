@@ -71,9 +71,6 @@ def _from_tar_data(data: bytes, open_flags: str = "r") -> bytes:
     return untarred_data
 
 
-# pylint wants UPPER_CASE for globals, but since these are functions, I think
-# normal Python lower_case is more reasonable.
-# pylint: disable=invalid-name
 _to_tar = _to_tar_data
 _to_tar_gz = lambda data: _to_tar_data(data, "w:gz")
 _to_tar_bz2 = lambda data: _to_tar_data(data, "w:bz2")
@@ -88,7 +85,6 @@ _from_tar_xz = lambda data: _from_tar_data(data, "r:xz")
 class CompressionType(BetterEnum):
     """Type of compression algorithm"""
 
-    # pylint: disable=too-few-public-methods
     GZIP = auto()
     # TODO
     # 7ZIP = auto()
@@ -149,7 +145,9 @@ void delta_decode(unsigned char *buffer, int length)
 
 
 def zstd_compress_wrapper(data: bytes, level: int = 22) -> bytes:
-    """ZSTD_compress doesn't have any keyword arguments, so the method used below causes an error for it"""
+    """ZSTD_compress doesn't have any keyword arguments, so the method used below causes an error because we pass level
+    as a kwarg.
+    """
     return zstd.ZSTD_compress(data, level)
 
 

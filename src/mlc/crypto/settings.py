@@ -75,7 +75,6 @@ class CipherOutputSettings:
     @property
     def iv(self) -> Optional[bytes]:
         """Get initialization vector (IV)"""
-        # pylint: disable=invalid-name
         return self.initialization_vector
 
     @property

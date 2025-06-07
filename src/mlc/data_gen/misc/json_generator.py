@@ -39,7 +39,6 @@ class JsonGenerator:
     # These are all valid
     TRUE_OUTER_TYPES = OUTER_TYPES + NON_RECURSIVE_TYPES
 
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         max_depth: int = 5,

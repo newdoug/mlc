@@ -6,7 +6,6 @@ fi
 
 SCRIPTDIR="$(readlink -f "$(dirname "$0")")"
 LINT_SCRIPTS=(
-  run_pylint.sh
   run_shellcheck.sh
 )
 
