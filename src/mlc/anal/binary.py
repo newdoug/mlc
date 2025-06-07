@@ -500,6 +500,11 @@ def compression_ratio_tar_xz(data: bytes) -> float:
     return len(compress(data, CompressionType.TAR_XZ)) / len(data)
 
 
+@mark
+def compression_ratio_zstd(data: bytes) -> float:
+    return len(compress(data, CompressionType.ZSTD)) / len(data)
+
+
 # TODO: zstd
 
 
