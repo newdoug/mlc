@@ -6,6 +6,8 @@ from typing import Optional
 
 from mlc.compression import compress, CompressionType, decompress
 
+import zstd
+
 
 def _rand_data(length: Optional[int] = None) -> bytes:
     """This has a default case unlike `rand_bytes` in `data_gen.random_data`"""
@@ -70,3 +72,8 @@ def test_tar_bz2_random_binary_data_random_length():
 def test_tar_xz_random_binary_data_random_length():
     """tar_xz compress & decompress random binary data of random length"""
     _run_comp_decomp_test(CompressionType.TAR_XZ)
+
+
+def test_zstd_random_binary_data_random_length():
+    """zstd compress & decompress random binary data of random length"""
+    _run_comp_decomp_test(CompressionType.ZSTD)
