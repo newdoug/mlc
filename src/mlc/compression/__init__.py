@@ -52,7 +52,7 @@ def _from_tar_data(data: bytes, open_flags: str = "r") -> bytes:
         # Read the temporary file as a tar
         with tarfile.open(raw_content_file.name, mode=open_flags) as tar_file:
             # Extract everything to disk in temporary dir
-            tar_file.extractall(path=extract_dir)
+            tar_file.extractall(path=extract_dir, filter="data")
             # If created with `_to_tar_data`, should just be 1 file, so
             # ordering doesn't matter
             for tinfo in tar_file.getmembers():

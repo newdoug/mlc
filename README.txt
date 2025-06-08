@@ -1,12 +1,11 @@
 TODO now:
 
 * Implement logs to DB hook, probably clean up logger a bit
+  * I Implement for Postgresql DB as well
 * Decide on format for data generation output. Make sure it's expandable for future.
 * Run some of the analysis on some small amounts of data
 * Write some unit tests for feature function/analysis
-* Remove all __all__ declarations
-* Remove pylint: disable things
-* Replace all dt.utcnow() with dt.now(tz.utc)
+* Implement PQC functions
 
 
 Concept:
@@ -292,6 +291,44 @@ learning to the model.
   1) "the contents of this tar looks like a got repo" or something similar
   2) "this exact file is available here: *some Internet link*" or "this exact file is available on this website somewhere: *some website name and/or link" or "a very similar file (maybe show/offer a diff if possible and available) is available here: *some link or site name*" (that one sounds a bit difficult and would probably take a ton of processing - would need to keep track of all files we've seen and metadata about it and then compare each of them to this one were currently inspecting - begs the idea of a service with background tasks/sub services/jobs running and sending notifications in some way to the user), or "this archive contains a git repo (commit XXXX if possible) that's from here: *repo link (GitHub, gitlab, bitbucket, another site, etc.)*"
 
+
+* Determine common ways that keys are generated:
+  * Randomly
+    * In the symmetric + asymmetric (to transfer symm key) methodology, symm key can usually be completely randomly generated.
+    * What's the source of randomness? Can that be broken? Can the seed(s) be easily replicated? How big is the space
+      for seeds (is it just a 32-bit int? Is that just put through an algorithm to generate a larger key?) It's probably
+      better than that, but maybe whatever is currently used is still imperfect an exploitable. E.g., even if the seed
+      to generate the key is based on several environmental/HW-related factors that's rather large (maybe 64 >= bytes),
+      what is the *effective* key space? Maybe one of the factors that goes into the 64 bytes (say, 8 bytes) effectively
+      only has about 4 bytes of possible values and maybe even only 2-3 types of likely possible values. Apply that to
+      the other factors and maybe the space is much smaller than thought.
+      * In this case, generate all possible inputs (or possibly just the most likely ones since it's probably still a
+        very large key space) and generate the hashes/PBKDF/whatever that would be used on it.
+  * User password
+    * Often salted, sometimes and/or pepper too/instead which is probably random.
+      * Depends on how big the salt is, but classic brute force with hash-table style stuff may be sufficient.
+    * If unsalted, the classic brute force with hash-table style stuff would probably be sufficient.
+    * In either case (salted or unsalted), need to know the most commonly used hash methods. SHA256? MD5? PBKDF-style?
+      etc.
+  * Find data set online containing all known collisions for each hash type.
+  * Find existing hash tables online to reduce re-computation.
+    * Create own service that hosts such data. Allow:
+      * Display of all columns + small (<100, say) sample of the data.
+      * Various hash types
+      * Various KDF types
+      * Various PBKDF types
+      * Allow computation submits by users. E.g., get all <WEIRD_HASH_TYPE> for all values of length X bits. Server will
+        compute them all, save them in case someone in future wants them, and gives them for download. If it'll take a
+        while, give the user a download link that, once computation is complete, will return the results. Could also
+        accept their email and say we'll send them an email with the download link once it's complete. This would preent
+        allowing users to spam the download link.
+        * Similarly, offer users to provide code that implements a hash algorithm. They must list third-party packages
+          required. We will accept it, offer them thanks, and tell them we'll manually inspect the code ourselves and if
+          it's valid and better (faster) than the current implementation, we'll use it. Only accept certain languages,
+          probably just C, C++, Python2, Python3.
+      * Selection of which columns the user wants to download.
+      * Provide this via a Python API, free download, stream/generator-like data download.
+    * Also post my own.
 
 
 Permute actual code pulled from GitHub or something using lexer/parser to come up with variations of algorithms and see if any produce any keys or partial keys or offsets of keys or something at all related to a key

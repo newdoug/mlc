@@ -8,8 +8,11 @@ fi
 
 SCRIPTDIR="$(readlink -f "$(dirname "$0")")"
 TESTDIR="$SCRIPTDIR"
-SRCDIR="$(readlink -f "$SCRIPTDIR/../src")"
 
 cd "$TESTDIR/.." || exit 1
 
-PYTHONPATH="$PYTHONPATH:$SRCDIR" python3 -m unittest "$@"
+# Old (before poetry), but kept for reference in case it's useful
+# SRCDIR="$(readlink -f "$SCRIPTDIR/../src")"
+# PYTHONPATH="$PYTHONPATH:$SRCDIR" python3 -m pytest "$@"
+
+poetry run pytest
