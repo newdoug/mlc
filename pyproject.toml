@@ -82,6 +82,5 @@ line-length = 100
 target-version = ["py312"]
 
 [tool.codespell]
-skip = '*.po,*.ts,./src/3rdParty,./src/Test'
 count = true
 quiet-level = 3

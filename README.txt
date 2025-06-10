@@ -290,6 +290,13 @@ learning to the model.
 * Try to identify more complex meanings behind tars/archives. This can mean at least 2 things:
   1) "the contents of this tar looks like a got repo" or something similar
   2) "this exact file is available here: *some Internet link*" or "this exact file is available on this website somewhere: *some website name and/or link" or "a very similar file (maybe show/offer a diff if possible and available) is available here: *some link or site name*" (that one sounds a bit difficult and would probably take a ton of processing - would need to keep track of all files we've seen and metadata about it and then compare each of them to this one were currently inspecting - begs the idea of a service with background tasks/sub services/jobs running and sending notifications in some way to the user), or "this archive contains a git repo (commit XXXX if possible) that's from here: *repo link (GitHub, gitlab, bitbucket, another site, etc.)*"
+* Average difference between bytes of plaintext and ciphertext
+  * Same thing, but shift each byte's index by 1, 2, 3, ... (e.g., compare byte 0 or plaintext with byte 1 of
+    ciphertext)
+* Average bytes similar (e.g., within X%) between plaintext and ciphertext
+* String similarity/substring algorithms popular in CS classes, but used on ciphertext
+* Make a generic pattern finding algorithm on integer sequences/series. Then, apply to these ciphertexts
+* Average 16-bit sum, 24-bit, 32-bit, etc. Average block sum
 
 
 * Determine common ways that keys are generated:
