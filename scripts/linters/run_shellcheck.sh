@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$DEBUG" = "1" ]; then
-  set -x
-fi
+[ "$DEBUG" = "1" ] && set -x
 
 DST="$1"
 if [ -z "$DST" ]; then
