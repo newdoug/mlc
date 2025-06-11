@@ -1,7 +1,5 @@
 TODO now:
 
-* Implement logs to DB hook, probably clean up logger a bit
-  * I Implement for Postgresql DB as well
 * Decide on format for data generation output. Make sure it's expandable for future.
 * Run some of the analysis on some small amounts of data
 * Write some unit tests for feature function/analysis
@@ -297,6 +295,14 @@ learning to the model.
 * String similarity/substring algorithms popular in CS classes, but used on ciphertext
 * Make a generic pattern finding algorithm on integer sequences/series. Then, apply to these ciphertexts
 * Average 16-bit sum, 24-bit, 32-bit, etc. Average block sum
+* Consider `tabular` package for displaying data in ASCII-like tables.
+* Dot products
+* Cross products
+* More matrix math
+* Similarity ranges between plaintext and ciphertext, not just exact byte matches, but also just almost equal (varying
+  "almost" measures)
+* Ratio of similarity between blocks of plaintext and ciphertext. I.e., is there any relationship between (block 1 of PT
+  / block 2 of PT) and (block 1 of CT / block 2 of CT). Probably try some different variations on this too.
 
 
 * Determine common ways that keys are generated:

@@ -1,7 +1,6 @@
 """Input/output and logging tools"""
 
 from dataclasses import dataclass
-from datetime import UTC, datetime as dt
 import logging
 import logging.handlers
 import os
@@ -11,6 +10,8 @@ import tarfile
 from typing import Optional, Union
 
 import asyncio
+
+from mlc.utils.dt import get_utc_now, get_utc_now_str
 
 
 # The logger object that most are expected to use and import
@@ -38,7 +39,7 @@ LOG_LEVEL_STR_TO_INT = {
 
 
 def _path_dt() -> str:
-    return f"{int(dt.now(UTC).timestamp() * 1000000)}"
+    return f"{int(get_utc_now().timestamp() * 1000000)}"
 
 
 def _generate_log_filename() -> str:
@@ -133,7 +134,7 @@ def _add_es_handler(logger: logging.Logger, settings: ElasticsearchLogSettings):
 
         async def async_emit(self, record):
             doc = {
-                "@timestamp": dt.now(UTC).isoformat(),
+                "@timestamp": get_utc_now_str(),
                 "log.level": record.levelname,
                 "log.levelno": record.levelno,
                 "log.logger": record.name,
@@ -175,6 +176,7 @@ def set_up_logger(
     log_level: Union[int, str] = logging.INFO,
     logger_name: str = DEFAULT_LOGGER_NAME,
     log_format: str = DEFAULT_LOG_FORMAT_STR,
+    additional_handlers: Optional[Union[logging.Handler, list[logging.Handler]]] = None,
 ) -> logging.Logger:
     logger = logger or LOG
     logger.name = logger_name
@@ -226,6 +228,14 @@ def set_up_logger(
 
     if use_es:
         _add_es_handler(logger, use_es)
+
+    if additional_handlers:
+        if not isinstance(additional_handlers, list):
+            additional_handlers = [additional_handlers]
+        for handler in additional_handlers:
+            handler.setFormatter(formatter)
+            handler.setLevel(log_level)
+            logger.addHandler(handler)
 
     return logger
 

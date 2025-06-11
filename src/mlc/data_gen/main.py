@@ -19,7 +19,10 @@ from mlc.compression import compress, CompressionType
 from mlc.crypto.cipher_types import CipherType
 from mlc.data_gen.data_type_base import DataTypeSettingKey
 from mlc.data_gen.random_data import RandomDataType, rand_int_in_range
-from mlc.utils.io import eprint
+from mlc.utils.config import load_config
+from mlc.utils.io import eprint, LOG, set_up_logger
+from mlc.utils.log_db_handler import DatabaseLogHandler
+from mlc.startup import pg
 
 
 def _gen_out_filename() -> str:
@@ -117,6 +120,19 @@ def main(args: List[str]) -> int:
     parser = _get_argparser()
     parsed_args = parser.parse_args(args)
     out_filename = parsed_args.output or _gen_out_filename()
+
+    config = load_config()
+    db_manager = pg.set_up_db(
+        db_name=config["DB_NAME"], db_user=config["DB_USER"], db_pass=config["DB_PASS"]
+    )
+    set_up_logger(additional_handlers=DatabaseLogHandler(db_manager))
+    # TODO: remove. Just for testing
+    LOG.trace("YEE trace")
+    LOG.debug("YEE debug")
+    LOG.info("YEE info")
+    LOG.warning("YEE warning")
+    LOG.error("YEE error")
+    LOG.critical("YEE critical")
 
     # Some validation
     if parsed_args.cipher or parsed_args.key_size:

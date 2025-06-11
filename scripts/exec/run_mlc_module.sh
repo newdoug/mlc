@@ -3,7 +3,7 @@
 [ "$DEBUG" = "1" ] && set -x
 
 SCRIPTDIR="$(readlink -f "$(dirname "$0")")"
-SRCDIR="$(readlink -f "$SCRIPTDIR/../src")"
+SRCDIR="$(readlink -f "$SCRIPTDIR/../../src")"
 
 cd "$SRCDIR" || exit 1
 PYMOD="$1"
