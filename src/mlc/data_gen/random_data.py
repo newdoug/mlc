@@ -23,13 +23,15 @@ class RandomDataType(DataTypeBase):
 
     def generate(self, settings: dict) -> bytes:
         length = settings[DataTypeSettingKey.LENGTH.name]
-        sparse_percent = settings.get(DataTypeSettingKey.SPARSE_PERCENT.name, 60.0)
-        sparse_byte = settings.get(DataTypeSettingKey.SPARSE_BYTE.name, 0)
 
         if self == RandomDataType.ASCII:
             return rand_ascii_bytes(length)
         if self == RandomDataType.BINARY:
             return rand_bytes(length)
+
+        sparse_percent = settings.get(DataTypeSettingKey.SPARSE_PERCENT.name, 60.0)
+        sparse_byte = settings.get(DataTypeSettingKey.SPARSE_BYTE.name, 0)
+
         if self == RandomDataType.SPARSE_ASCII:
             return rand_sparse_ascii_bytes(
                 length, sparse_percent=sparse_percent, sparse_byte=sparse_byte
