@@ -126,13 +126,6 @@ def main(args: List[str]) -> int:
         db_name=config["DB_NAME"], db_user=config["DB_USER"], db_pass=config["DB_PASS"]
     )
     set_up_logger(additional_handlers=DatabaseLogHandler(db_manager))
-    # TODO: remove. Just for testing
-    LOG.trace("YEE trace")
-    LOG.debug("YEE debug")
-    LOG.info("YEE info")
-    LOG.warning("YEE warning")
-    LOG.error("YEE error")
-    LOG.critical("YEE critical")
 
     # Some validation
     if parsed_args.cipher or parsed_args.key_size:

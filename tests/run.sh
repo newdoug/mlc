@@ -15,4 +15,4 @@ cd "$TESTDIR/.." || exit 1
 # SRCDIR="$(readlink -f "$SCRIPTDIR/../src")"
 # PYTHONPATH="$PYTHONPATH:$SRCDIR" python3 -m pytest "$@"
 
-poetry run pytest
+poetry run pytest "$@"

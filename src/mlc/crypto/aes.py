@@ -1,16 +1,19 @@
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
 
-from mlc.crypto.crypter import Crypter
-from mlc.crypto.settings import CipherInputSettings
+from mlc.crypto.metadata import CipherMetadata
 
 
-class AesCbcCrypt(Crypter):
-    def encrypt(self, data: bytes, settings: CipherSettings) -> bytes:
-        """Encrypt data"""
-        # TODO: still need to handle padding
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
-        encryptor = cipher.encryptor()
-        return encryptor.update(data) + encryptor.finalize()
+def encrypt_aes(metadata: CipherMetadata, data: bytes) -> bytes:
+    cipher = Cipher(algorithms.AES(metadata.key), metadata.mode_str_to_mode()(metadata.iv))
+    encryptor = cipher.encryptor()
+    padder = padding.PKCS7(cipher.algorithm.block_size).padder()
+    return encryptor.update(padder.update(data) + padder.finalize()) + encryptor.finalize()
 
-    def decrypt(self, data: bytes, settings: CipherSettings) -> bytes:
-        """Decrypt using AES in CBC mode"""
+
+def decrypt_aes(metadata: CipherMetadata, data: bytes) -> bytes:
+    cipher = Cipher(algorithms.AES(metadata.key), metadata.mode_str_to_mode()(metadata.iv))
+    decryptor = cipher.decryptor()
+    plaintext = decryptor.update(data) + decryptor.finalize()
+    unpadder = padding.PKCS7(cipher.algorithm.block_size).unpadder()
+    return unpadder.update(plaintext) + unpadder.finalize()
