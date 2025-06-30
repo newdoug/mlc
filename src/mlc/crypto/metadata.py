@@ -1,16 +1,17 @@
-from dataclasses import dataclass
+from typing import Optional
 
 from cryptography.hazmat.primitives.ciphers import modes
 
+from mlc.utils.base_model import BaseModel
 
-@dataclass
-class CipherMetadata:
+
+class CipherMetadata(BaseModel):
     name: str
     num_bits: int
     key: bytes
-    iv: bytes = None
-    nonce: bytes = None
-    mode: str = None
+    iv: Optional[bytes] = None
+    nonce: Optional[bytes] = None
+    mode: Optional[str] = None
 
     def mode_str_to_mode(self):
         if self.mode == "CBC":

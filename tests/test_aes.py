@@ -5,6 +5,7 @@ from mlc.crypto.aes import decrypt_aes, encrypt_aes
 from mlc.crypto.metadata import CipherMetadata
 
 # TODO: test and support ECB and GCM
+# TODO: deduplicate these test functions
 
 
 def _run_encrypt_decrypt_test(

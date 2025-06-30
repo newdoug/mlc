@@ -1,4 +1,6 @@
 import logging
+from queue import Queue
+import threading
 
 from mlc.db.manager import DbManager
 from mlc.db.model.logs import LogRecord
@@ -8,9 +10,14 @@ class DatabaseLogHandler(logging.Handler):
     def __init__(self, db_manager: DbManager):
         super().__init__()
         self.db_manager = db_manager
+        self.stop = False
+        self._log_db_thread = threading.Thread(target=self._log_db, daemon=True)
+        self._db_records_queue = Queue()
+        self._log_db_thread.start()
 
-    def emit(self, record):
-        with self.db_manager.get_session() as session:
+    def _log_db(self):
+        while not self.stop or not self._db_records_queue.empty():
+            record = self._db_records_queue.get()
             log = LogRecord(
                 level=record.levelname,
                 name=record.name,
@@ -20,4 +27,12 @@ class DatabaseLogHandler(logging.Handler):
                 func=record.funcName,
                 exception=self.formatException(record.exc_info) if record.exc_info else None,
             )
-            session.add(log)
+            with self.db_manager.get_session() as session:
+                session.add(log)
+
+    def emit(self, record):
+        self._db_records_queue.put(record)
+
+    def close(self):
+        self.stop = True
+        self._log_db_thread.join()

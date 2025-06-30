@@ -3,6 +3,6 @@
 # credentials are safely stored somewhere (not in the repo) and with appropriate ACLs.
 # This file is expected to be sourced by the postgres database setup script. That script will then write these values
 # to a YAML file containing the same information that is meant for the Python code.
-DB_NAME=mlc_data
-DB_USER=user
-DB_PASS=password
+export DB_NAME=mlc_data
+export DB_USER=user
+export DB_PASS=password
