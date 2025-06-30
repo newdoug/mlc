@@ -72,7 +72,9 @@ addopts = [
     "-rA",
     "--random-order",
     "--full-trace",
-    "-v"
+    "-v",
+    "--cov-report=html",
+    "--cov=mlc"
 ]
 testpaths = ["tests"]
 pythonpath = ["src"]

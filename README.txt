@@ -385,6 +385,12 @@ After installing above, enter the virtual environment that was created.
 $(poetry env activate | head -n1)
 ```
 
+or alternatively just source the `env_activate.sh` script:
+
+```
+source env_activate.sh
+```
+
 ## Install pre-commit Hooks
 
 ```
