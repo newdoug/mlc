@@ -18,6 +18,8 @@ class DatabaseLogHandler(logging.Handler):
     def _log_db(self):
         while not self.stop or not self._db_records_queue.empty():
             record = self._db_records_queue.get()
+            if not record:
+                continue
             log = LogRecord(
                 level=record.levelname,
                 name=record.name,
@@ -35,4 +37,6 @@ class DatabaseLogHandler(logging.Handler):
 
     def close(self):
         self.stop = True
+        # Edge case where the .get() above never times out or gets interrupted if there are no more records in the queue
+        self._db_records_queue.put(None)
         self._log_db_thread.join()
