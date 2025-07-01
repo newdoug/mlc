@@ -347,6 +347,10 @@ learning to the model.
 Permute actual code pulled from GitHub or something using lexer/parser to come up with variations of algorithms and see if any produce any keys or partial keys or offsets of keys or something at all related to a key
 Permuting C/c++ and assembly.
 Start with something similar to the actual algorithm.
+Maybe if using a similar algorithm that's weaker and seeing if that has weaknesses we can use whatever info that gives
+us to create a relationship with the bad algorithm. E.g., If weak algo has <X property>, then the strong algo has <Y
+property> and since one is weak, we can get all info on that just fine and then make some assumptions on the strong
+version.
 Also try bad transformations to see if anything easy somehow works
 Aes, chacha20, rsa, etc.
 

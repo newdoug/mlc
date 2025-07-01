@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 from typing import Optional
 
-from sqlmodel import DateTime, Field, SQLModel
+from sqlmodel import Field, SQLModel
 
 from mlc.utils.dt import get_utc_now
 
@@ -11,12 +11,10 @@ class LogRecord(SQLModel, table=True):
 
     id: int = Field(primary_key=True)
     created: dt = Field(default_factory=get_utc_now)
-    # TODO: consider making these saller fields like CHAR(50) or something because I think those are faster than just
-    #       TEXT
-    level: str
-    name: str
+    level: str = Field(max_length=10)
+    name: str = Field(max_length=16)
     message: str
-    pathname: str
-    lineno: int
-    func: str
+    pathname: Optional[str] = None
+    lineno: Optional[int] = None
+    func: Optional[str] = None
     exception: Optional[str] = None

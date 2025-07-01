@@ -47,6 +47,7 @@ pydantic = "^2.11.5"
 sqlmodel = "^0.0.24"
 elasticsearch = "^9.0.1"
 aiohttp = "^3.12.9"
+crcmod = "^1.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
