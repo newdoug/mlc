@@ -69,6 +69,12 @@ def _get_argparser() -> argparse.ArgumentParser:
         "what compression algorithm",
         choices=CompressionType.names(),
     )
+    parser.add_argument(
+        "--keep-uncompressed",
+        help="Only matters if --compress is also given. If set, both the compressed and uncompressed sample is "
+        "generated and possibly encrypted",
+        action="store_true",
+    )
     # Encryption arguments
     parser.add_argument(
         "--cipher",
@@ -83,7 +89,13 @@ def _get_argparser() -> argparse.ArgumentParser:
         "--key-size",
         help="Key size (in bits) to use for encryption",
         type=int,
-        default=[],
+        default=256,
+    )
+    parser.add_argument(
+        "--num-encryptions",
+        help="Number of times (different keys and/or IVs) to encrypt each sample",
+        default=1,
+        type=int,
     )
     return parser
 
@@ -111,7 +123,8 @@ def _compress_samples(
 def _encrypt_samples(
     samples: Iterable[bytes], cipher_type: CipherType, key_size_bits: int
 ) -> Iterable[bytes]:
-    _encrypt_sample(sample, cipher_type, key_size_bits)
+    for sample in samples:
+        yield _encrypt_sample(sample, cipher_type, key_size_bits)
 
 
 def main(args: List[str]) -> int:

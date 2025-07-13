@@ -44,16 +44,16 @@ class HashType(BetterEnum):
 # Will probably need other libraries or to implement them ourself
 
 
-def md2(data: bytes) -> str:
-    h = MD2.new()
-    h.update(data)
-    return h.digest()
+def md2(data: bytes) -> bytes:
+    hasher = MD2.new()
+    hasher.update(data)
+    return hasher.digest()
 
 
-def md4(data: bytes) -> str:
-    h = MD4.new()
-    h.update(data)
-    return h.digest()
+def md4(data: bytes) -> bytes:
+    hasher = MD4.new()
+    hasher.update(data)
+    return hasher.digest()
 
 
 def _make_std_hashlib_hash_func(hash_class) -> Callable[[bytes], bytes]:

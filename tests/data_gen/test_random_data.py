@@ -1,4 +1,4 @@
-"""`utils` module tests"""
+"""`data_gen.random_data` module tests"""
 
 import os
 import unittest
@@ -38,7 +38,7 @@ class TestRandIntInRange(unittest.TestCase):
             self._run_range_test((low, low + 1), 100)
 
     def test_gen_ascii(self):
-        """`rand_int_in_range` using the `ASCII_RANGE` in the utils module"""
+        """`rand_int_in_range` using `ASCII_RANGE`"""
         for iteration in range(1000):
             with self.subTest(iteration=iteration):
                 value = rand_int_in_range(ASCII_RANGE[0], ASCII_RANGE[1])
@@ -69,6 +69,6 @@ class TestRandIntInRange(unittest.TestCase):
         """Test that high value in range is exclusive"""
         for _ in range(1000):
             if rand_int_in_range(2, 10) > 9:
-                self.assertTrue(False, msg="Low range never occurred: may not be possible")
+                self.assertTrue(False, msg="High range unexpectedly occurred")
         # Success case
         return

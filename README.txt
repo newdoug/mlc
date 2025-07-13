@@ -303,6 +303,35 @@ learning to the model.
   "almost" measures)
 * Ratio of similarity between blocks of plaintext and ciphertext. I.e., is there any relationship between (block 1 of PT
   / block 2 of PT) and (block 1 of CT / block 2 of CT). Probably try some different variations on this too.
+* Number of prime divisors
+* Number of divisors
+* Calculate GCD, LCM, etc.
+* Take data mod <num> and recalculate a bunch of features - see if anything better pops up.
+* Sort the data in weird ways and see if anything pops up, possibly also doing something with modulo too
+* Interpreting bytes in different ways:
+** Swapping endianness? Of each uint8? Of each int8 and leaving sign bit? Of each uint16? Of each int16 and keeping sign
+bit? Every other byte swap endianness?
+** Floats with different mantissas?
+** Square each byte? With mod?
+** Cube?
+** ceil(sqrt(byte))? cube root? ceil(byte * (255-byte))? ceil(sqrt(byte * (255-byte)))?
+*** Floor instead?
+*** Running existing features on these new bytes to see if pattern occurs?
+* Fitting the random data to OEIS sequences like curve fitting/estimation
+** Or fitting a subsequence.
+* Encrypting constant data (like all 0x01s or all 0x00s or all 0xFFs or all 0x11s, possibly modulo <something> may be
+  more likely to yield a known sequence.
+* With all the transformations on data and then re-running features on all of these variations, auto-run the
+  feature-selection stuff and alert if something is suspiciously high.
+* Run decryption procedure(s) on the data and re-run features
+** With correct algorithm
+** With incorrect algorithm?
+** Correct IV? Incorrect IV?
+* Do multiple decryptions with incorrect key possibly equal the correct decryption?
+* W
+* Percent prime?
+* Percent even, percent odd?
+* Euler-phi calculation?
 
 
 * Determine common ways that keys are generated:
