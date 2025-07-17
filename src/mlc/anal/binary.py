@@ -1,10 +1,12 @@
+"""Analysis functions that may be useful on random binary data"""
+
 from collections import Counter
 from dataclasses import dataclass
 from functools import lru_cache
 import math
 import subprocess
 import tempfile
-from typing import Callable, Iterable, Tuple
+from typing import Callable, Iterable, Tuple, Union
 import zlib
 
 from mlc.compression import compress, CompressionType
@@ -15,16 +17,18 @@ _MARK_BYTE_ARRAY_ATTR = "is_anal"
 # Indicates that the function accepts 2 bytes objects and returns a float or int
 _MARK_BYTE_ARRAYS_ATTR = "is_anals"
 DEFAULT_BLOCK_SIZE_BYTES: int = 8
+ByteArrayCallableT = Callable[[bytes], Union[int, float]]
+ByteArraysCallableT = Callable[[bytes, bytes], Union[int, float]]
 
 
-def mark_byte_array_func(f: Callable) -> Callable:
-    setattr(f, _MARK_BYTE_ARRAY_ATTR, True)
-    return f
+def mark_byte_array_func(func: ByteArrayCallableT) -> ByteArrayCallableT:
+    setattr(func, _MARK_BYTE_ARRAY_ATTR, True)
+    return func
 
 
-def mark_byte_arrays_func(f: Callable) -> Callable:
-    setattr(f, _MARK_BYTE_ARRAYS_ATTR, True)
-    return f
+def mark_byte_arrays_func(func: ByteArraysCallableT) -> ByteArraysCallableT:
+    setattr(func, _MARK_BYTE_ARRAYS_ATTR, True)
+    return func
 
 
 def set_default_block_size(block_size_bytes: int) -> int:
@@ -73,22 +77,22 @@ def average_byte_int(data: bytes) -> int:
 
 @mark_byte_array_func
 def average_bit(data: bytes) -> float:
-    return sum([num_bits_on(byte) for byte in data]) / (len(data) * 8)
+    return sum(num_bits_on(byte) for byte in data) / (len(data) * 8)
 
 
 @mark_byte_array_func
 def average_nibble(data: bytes) -> float:
-    return sum([lower_nibble(byte) + upper_nibble(byte) for byte in data]) / (len(data) * 2)
+    return sum(lower_nibble(byte) + upper_nibble(byte) for byte in data) / (len(data) * 2)
 
 
 @mark_byte_array_func
 def average_upper_nibble(data: bytes) -> float:
-    return sum([upper_nibble(byte) for byte in data]) / len(data)
+    return sum(upper_nibble(byte) for byte in data) / len(data)
 
 
 @mark_byte_array_func
 def average_lower_nibble(data: bytes) -> float:
-    return sum([lower_nibble(byte) for byte in data]) / len(data)
+    return sum(lower_nibble(byte) for byte in data) / len(data)
 
 
 @mark_byte_array_func
@@ -103,12 +107,12 @@ def most_common_byte(data: bytes) -> int:
 
 @mark_byte_array_func
 def average_num_bits_on(data: bytes) -> float:
-    return sum([num_bits_on(byte) for byte in data]) / len(data)
+    return sum(num_bits_on(byte) for byte in data) / len(data)
 
 
 @mark_byte_array_func
 def average_num_bits_off(data: bytes) -> float:
-    return sum([num_bits_off(byte) for byte in data]) / len(data)
+    return sum(num_bits_off(byte) for byte in data) / len(data)
 
 
 @mark_byte_array_func
@@ -127,34 +131,32 @@ def percent_bytes_with_bit_x_off(data: bytes, bit: int) -> float:
 
 @mark_byte_array_func
 def percent_bytes_first_nibble_gt_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) > upper_nibble(byte)]) / len(data)
+    return 100.0 * sum(1 for byte in data if lower_nibble(byte) > upper_nibble(byte)) / len(data)
 
 
 @mark_byte_array_func
 def percent_bytes_first_nibble_ge_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) >= upper_nibble(byte)]) / len(data)
+    return 100.0 * sum(1 for byte in data if lower_nibble(byte) >= upper_nibble(byte)) / len(data)
 
 
 @mark_byte_array_func
 def percent_bytes_first_nibble_lt_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) < upper_nibble(byte)]) / len(data)
+    return 100.0 * sum(1 for byte in data if lower_nibble(byte) < upper_nibble(byte)) / len(data)
 
 
 @mark_byte_array_func
 def percent_bytes_first_nibble_le_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) <= upper_nibble(byte)]) / len(data)
+    return 100.0 * sum(1 for byte in data if lower_nibble(byte) <= upper_nibble(byte)) / len(data)
 
 
 @mark_byte_array_func
 def percent_bytes_first_nibble_eq_second_nibble(data: bytes) -> float:
-    return 100.0 * sum([1 for byte in data if lower_nibble(byte) == upper_nibble(byte)]) / len(data)
+    return 100.0 * sum(1 for byte in data if lower_nibble(byte) == upper_nibble(byte)) / len(data)
 
 
 @mark_byte_array_func
 def percent_bytes_first_nibble_eq_complement_of_second_nibble(data: bytes) -> float:
-    return (
-        100.0 * sum([1 for byte in data if lower_nibble(byte) == ~upper_nibble(byte)]) / len(data)
-    )
+    return 100.0 * sum(1 for byte in data if lower_nibble(byte) == ~upper_nibble(byte)) / len(data)
 
 
 def _mirror(byte: int) -> int:
@@ -164,10 +166,10 @@ def _mirror(byte: int) -> int:
 
 @mark_byte_array_func
 def percent_bytes_first_nibble_eq_mirror_of_second_nibble(data: bytes) -> float:
-    # TODO: is sum([1 for byte ...]) or len([byte for byte ...]) faster? Memory efficiency?
+    # TODO: is sum(1 for byte ...]) or len([byte for byte ...) faster? Memory efficiency?
     return (
         100.0
-        * sum([1 for byte in data if lower_nibble(byte) == _mirror(upper_nibble(byte))])
+        * sum(1 for byte in data if lower_nibble(byte) == _mirror(upper_nibble(byte)))
         / len(data)
     )
 
@@ -227,7 +229,7 @@ def _percent_op_next_byte(data: bytes, op: Callable) -> float:
         return 0.0
     occ = 0
     for idx in range(0, len(data) - 1):
-        if op(ata[idx], data[idx + 1]):
+        if op(data[idx], data[idx + 1]):
             occ += 1
     return 100.0 * occ / (len(data) - 1)
 
@@ -277,36 +279,39 @@ def percent_bytes_eq_next_byte(data: bytes) -> float:
     return _percent_op_next_byte(data, _eq_op)
 
 
-def _set_up_percent_bytes_with_bits_funcs():
+def _set_up_percent_bytes_with_bits_funcs() -> None:
+    def _get_func(patt):
+        return lambda data: 100.0 * sum(1 for byte in data if patt in _bin(byte)) / len(data)
+
     for bit_len in range(1, 9):
         for patt in range(0, 2**bit_len):
             patt = ("{:0" + str(bit_len) + "b}").format(patt)
             func_name = f"percent_of_bytes_with_bits_{patt}"
-            globals()[func_name] = mark_byte_array_func(
-                lambda data: 100.0 * sum([1 for byte in data if patt in _bin(byte)]) / len(data)
-            )
+            globals()[func_name] = mark_byte_array_func(_get_func(patt))
 
 
 _set_up_percent_bytes_with_bits_funcs()
 
 
-def _set_up_percent_bytes_gt_funcs():
+def _set_up_percent_bytes_gt_funcs() -> None:
+    def _get_func(num):
+        return lambda data: 100.0 * sum(1 for byte in data if byte > num) / len(data)
+
     for num in range(1, 255):
         func_name = f"percent_of_bytes_gt_{num}"
-        globals()[func_name] = mark_byte_array_func(
-            lambda data: 100.0 * sum([1 for byte in data if byte > num]) / len(data)
-        )
+        globals()[func_name] = mark_byte_array_func(_get_func(num))
 
 
 _set_up_percent_bytes_gt_funcs()
 
 
-def _set_up_percent_freq_each_byte_funcs():
+def _set_up_percent_freq_each_byte_funcs() -> None:
+    def _get_func(num):
+        return lambda data: 100.0 * data.count(num) / len(data)
+
     for num in range(0, 256):
         func_name = f"percent_of_bytes_eq_{num}"
-        globals()[func_name] = mark_byte_array_func(
-            lambda data: 100.0 * data.count(num) / len(data)
-        )
+        globals()[func_name] = mark_byte_array_func(_get_func(num))
 
 
 _set_up_percent_freq_each_byte_funcs()
@@ -314,18 +319,21 @@ _set_up_percent_freq_each_byte_funcs()
 
 def _set_up_percent_of_blocks_with_byte_in_pos_funcs(
     pos: int, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
-):
-    for num in range(0, 256):
-        func_name = f"percent_of_blocks_idx_{pos}_eq_{num}"
-        globals()[func_name] = mark_byte_array_func(
-            lambda data: 100.0
-            * len([block for block in blocks(data) if block[pos] == num])
+) -> None:
+    def _get_func(pos_, num):
+        return lambda data: (
+            100.0
+            * len([block for block in blocks(data, block_size_bytes) if block[pos_] == num])
             / (len(data) / block_size_bytes)
         )
 
+    for num in range(0, 256):
+        func_name = f"percent_of_blocks_idx_{pos}_eq_{num}"
+        globals()[func_name] = mark_byte_array_func(_get_func(pos, num))
 
-for pos in range(DEFAULT_BLOCK_SIZE_BYTES):
-    _set_up_percent_of_blocks_with_byte_in_pos_funcs(pos, block_size_bytes=DEFAULT_BLOCK_SIZE_BYTES)
+
+for POS in range(DEFAULT_BLOCK_SIZE_BYTES):
+    _set_up_percent_of_blocks_with_byte_in_pos_funcs(POS, block_size_bytes=DEFAULT_BLOCK_SIZE_BYTES)
 
 
 def _average_block_op(
@@ -389,15 +397,15 @@ class EntResults:
     serial_correlation: float
 
 
-# If data is only run serially through functions in this file, then 1 would be sufficient, but in cases of
-# multi-threading or multi-processing, more cache entries would be needed to be useful
+# If data is only run serially through functions in this file, then 1 would be sufficient, but in
+# cases of multi-threading or multi-processing, more cache entries would be needed to be useful
 @lru_cache(maxsize=64)
 def run_ent(data: bytes) -> EntResults:
     with tempfile.NamedTemporaryFile() as temp_file:
         filename = temp_file.name
         with open(filename, "wb") as handle:
             handle.write(data)
-        result = subprocess.run(["ent", "-t", filename], stdout=subprocess.PIPE)
+        result = subprocess.run(["ent", "-t", filename], stdout=subprocess.PIPE, check=True)
         lines = [line.strip() for line in result.stdout.decode().split("\n")]
         values = [value.strip() for value in lines[1].split(",")]
         return EntResults(
@@ -547,21 +555,16 @@ def compression_ratio_zstd(data: bytes) -> float:
     return len(compress(data, CompressionType.ZSTD)) / len(data)
 
 
-# TODO: zstd
-
-
 @mark_byte_array_func
 def percent_bytes_bit0_bit7_symmetry(data: bytes) -> float:
-    return sum([1 for byte in data if (byte & 1) and (byte & 0b10000000)]) / len(data)
+    return sum(1 for byte in data if (byte & 1) and (byte & 0b10000000)) / len(data)
 
 
-@mark_byte_array_func
-def percent_bytes_bit0_bit7_symmetry(data: bytes) -> float:
-    return sum([1 for byte in data if (byte & 1) and (byte & 0b10000000)]) / len(data)
-
-
-def _set_up_percent_bit_symmetries_funcs():
+def _set_up_percent_bit_symmetries_funcs() -> None:
     # TODO: unit test these
+    def _get_func(start_1, end_1, start_2, end_2):
+        return lambda data: 100.0 * _num_match(data, start_1, end_1, start_2, end_2) / len(data)
+
     for start_bit_idx_1 in range(0, 7):
         for start_bit_idx_2 in range(start_bit_idx_1 + 1, 8):
             for bit_len in range(1, 8 - start_bit_idx_2):
@@ -578,17 +581,10 @@ def _set_up_percent_bit_symmetries_funcs():
                             s += 1
                     return s
 
-                def _get_func(start_1, end_1, start_2, end_2):
-                    return (
-                        lambda data: 100.0
-                        * _num_match(data, start_1, end_1, start_2, end_2)
-                        / len(data)
-                    )
-
                 globals()[func_name] = mark_byte_array_func(
                     # This binds the proper idx values to the function returned
-                    # TODO: make sure other functions that do this globals()[...] thing properly bind values too (should
-                    # be verifiable with unit tests)
+                    # TODO: make sure other functions that do this globals()[...] thing properly
+                    # bind values too (should be verifiable with unit tests)
                     _get_func(start_bit_idx_1, end_bit_idx_1, start_bit_idx_2, end_bit_idx_2)
                 )
 
@@ -596,11 +592,15 @@ def _set_up_percent_bit_symmetries_funcs():
 _set_up_percent_bit_symmetries_funcs()
 
 
-def _set_up_percent_bit_mask_match_funcs():
+def _set_up_percent_bit_mask_match_funcs() -> None:
+    def _get_func(mask):
+        return lambda data: 100.0 * sum(1 for byte in data if byte & mask == mask) / len(data)
+
     for mask in range(1, 256):
         func_name = f"percent_of_bytes_matching_mask_{mask}"
         globals()[func_name] = mark_byte_array_func(
-            lambda data: 100.0 * sum([1 for byte in data if byte & mask == mask]) / len(data)
+            # This binds the proper mask value to the function returned
+            _get_func(mask)
         )
 
 
@@ -608,19 +608,38 @@ _set_up_percent_bit_mask_match_funcs()
 
 
 @mark_byte_array_func
-def xor_all_bytes(data: bytes) -> int:
+def xor_all_bytes_8bit(data: bytes) -> int:
     val = 0
     for byte in data:
         val ^= byte
     return val
 
 
+def xor_all_bytes_16bit(data: bytes, byteorder: str) -> int:
+    val = 0
+    for idx in range(0, len(data), 2):
+        val ^= int.from_bytes(data[idx : idx + 2], byteorder=byteorder)
+    return val
+
+
 @mark_byte_array_func
-def average_xor_per_block(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
+def xor_all_bytes_16bit_le(data: bytes) -> int:
+    return xor_all_bytes_16bit(data, "little")
+
+
+@mark_byte_array_func
+def xor_all_bytes_16bit_be(data: bytes) -> int:
+    return xor_all_bytes_16bit(data, "big")
+
+
+@mark_byte_array_func
+def average_xor_per_block_8bit(
+    data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
+) -> float:
     sums = 0
     num_blocks = 0
     for block in blocks(data, block_size_bytes=block_size_bytes):
-        sums += xor_all_bytes(block)
+        sums += xor_all_bytes_8bit(block)
         num_blocks += 1
     return sums / num_blocks
 
@@ -730,8 +749,8 @@ def average_abs_difference_between_byte_arrays(data1: bytes, data2: bytes) -> fl
 # about between plaintext and transformed ciphertext? What about between
 # ciphertext and transformed plaintext? What about between transformed plaintext
 # and transformed ciphertext?
-# TODO: use various transformations (probably pieces of AES) on blocks/plaintext/ciphertext using just
-# piece of known key and compare those transformations with other values?
+# TODO: use various transformations (probably pieces of AES) on blocks/plaintext/ciphertext using
+# just piece of known key and compare those transformations with other values?
 # Plaintext? Ciphertext? Single blocks of plaintext? Single blocks of
 # ciphertext? Transformed ciphertext? Etc.
 # TODO: most common bit position (4, 8, and 16 bits)
@@ -742,7 +761,8 @@ def average_abs_difference_between_byte_arrays(data1: bytes, data2: bytes) -> fl
 #       idk what I mean by this
 # TODO: percent similarity between plaintext and ciphertext
 # TODO: check for recurring patterns of bits
-# TODO: bit transitions (how often a bit transitions from on to off or off to on between indices)? Average per byte? Average byte 16 bits? 32 bits?
+# TODO: bit transitions (how often a bit transitions from on to off or off to on between indices)?
+#       Average per byte? Average byte 16 bits? 32 bits?
 # TODO: average bit on lengthi (bits on in a row)? Per byte? Per 16 bits? Per 32 bits?
 
 
@@ -774,11 +794,12 @@ BYTE_ARRAY_ANAL_FUNCS = get_byte_array_analysis_funcs()
 BYTE_ARRAYS_ANAL_FUNCS = get_byte_arrays_analysis_funcs()
 
 
-# print(BYTE_ARRAY_ANAL_FUNCS)
-print(len(BYTE_ARRAY_ANAL_FUNCS))
-print(len(BYTE_ARRAYS_ANAL_FUNCS))
-# TODO: turn these into unit tests
-# print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5\x82\x00"))
-# print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3"))
-# print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\x01"))
-# print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5"))
+if __name__ == "__main__":
+    print(BYTE_ARRAY_ANAL_FUNCS)
+    print(len(BYTE_ARRAY_ANAL_FUNCS))
+    print(len(BYTE_ARRAYS_ANAL_FUNCS))
+    # TODO: turn these into unit tests
+    # print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5\x82\x00"))
+    # print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3"))
+    # print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\x01"))
+    # print(percent_of_bytes_bits_0_to_1_eq_6_to_7(b"\xc3\xc4\xc5"))
