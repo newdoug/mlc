@@ -337,6 +337,10 @@ bit? Every other byte swap endianness?
 * Euler-phi calculation?
 * Another set of scripts just trying to detect patterns generically or repeating patterns that might be meaningful and
   then we can turn that into some quantifiable feature(s).
+* Every 4th byte, every 2nd byte, 0th byte, etc. and re-run features on it.
+* Look for counters
+* Look for timestamps and/or timestamp-like sequences
+* Map the bytes into an image format and run opencv or something on it to try to detect if common images are found.
 
 
 * Determine common ways that keys are generated:

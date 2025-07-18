@@ -17,8 +17,9 @@ _MARK_BYTE_ARRAY_ATTR = "is_anal"
 # Indicates that the function accepts 2 bytes objects and returns a float or int
 _MARK_BYTE_ARRAYS_ATTR = "is_anals"
 DEFAULT_BLOCK_SIZE_BYTES: int = 8
-ByteArrayCallableT = Callable[[bytes], Union[int, float]]
-ByteArraysCallableT = Callable[[bytes, bytes], Union[int, float]]
+FeatureType = Union[float, int]
+ByteArrayCallableT = Callable[[bytes], FeatureType]
+ByteArraysCallableT = Callable[[bytes, bytes], FeatureType]
 
 
 def mark_byte_array_func(func: ByteArrayCallableT) -> ByteArrayCallableT:
@@ -75,6 +76,74 @@ def average_byte_int(data: bytes) -> int:
     return sum(data) // len(data)
 
 
+def break_bytes(data: bytes, int_size_bytes: int, byteorder: str, signed: bool) -> list[int]:
+    def _iter():
+        for i in range(0, len(data) - int_size_bytes, int_size_bytes):
+            yield int.from_bytes(data[i : i + int_size_bytes], byteorder=byteorder, signed=signed)
+
+    return list(_iter())
+
+
+@mark_byte_array_func
+def average_uint16_le(data: bytes) -> float:
+    return sum(break_bytes(data, 2, "little", False)) / (len(data) // 2)
+
+
+@mark_byte_array_func
+def average_uint16_be(data: bytes) -> float:
+    return sum(break_bytes(data, 2, "big", False)) / (len(data) // 2)
+
+
+@mark_byte_array_func
+def average_int16_le(data: bytes) -> float:
+    return sum(break_bytes(data, 2, "little", True)) / (len(data) // 2)
+
+
+@mark_byte_array_func
+def average_int16_be(data: bytes) -> float:
+    return sum(break_bytes(data, 2, "big", True)) / (len(data) // 2)
+
+
+@mark_byte_array_func
+def average_uint24_le(data: bytes) -> float:
+    return sum(break_bytes(data, 3, "little", False)) / (len(data) // 3)
+
+
+@mark_byte_array_func
+def average_uint24_be(data: bytes) -> float:
+    return sum(break_bytes(data, 3, "big", False)) / (len(data) // 3)
+
+
+@mark_byte_array_func
+def average_int24_le(data: bytes) -> float:
+    return sum(break_bytes(data, 3, "little", True)) / (len(data) // 3)
+
+
+@mark_byte_array_func
+def average_int24_be(data: bytes) -> float:
+    return sum(break_bytes(data, 3, "big", True)) / (len(data) // 3)
+
+
+@mark_byte_array_func
+def average_uint32_le(data: bytes) -> float:
+    return sum(break_bytes(data, 4, "little", False)) / (len(data) // 4)
+
+
+@mark_byte_array_func
+def average_uint32_be(data: bytes) -> float:
+    return sum(break_bytes(data, 4, "big", False)) / (len(data) // 4)
+
+
+@mark_byte_array_func
+def average_int32_le(data: bytes) -> float:
+    return sum(break_bytes(data, 4, "little", True)) / (len(data) // 4)
+
+
+@mark_byte_array_func
+def average_int32_be(data: bytes) -> float:
+    return sum(break_bytes(data, 4, "big", True)) / (len(data) // 4)
+
+
 @mark_byte_array_func
 def average_bit(data: bytes) -> float:
     return sum(num_bits_on(byte) for byte in data) / (len(data) * 8)
@@ -115,14 +184,12 @@ def average_num_bits_off(data: bytes) -> float:
     return sum(num_bits_off(byte) for byte in data) / len(data)
 
 
-@mark_byte_array_func
 def percent_bytes_with_bit_x_on(data: bytes, bit: int) -> float:
     assert 0 <= bit <= 7
     bit = 1 << bit
     return 100.0 * len([byte for byte in data if byte & bit]) / len(data)
 
 
-@mark_byte_array_func
 def percent_bytes_with_bit_x_off(data: bytes, bit: int) -> float:
     assert 0 <= bit <= 7
     bit = 1 << bit
@@ -446,9 +513,7 @@ def ent_serial_correlation(data: bytes) -> float:
 def ent_entropy_block_average(
     data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
 ) -> float:
-    block_vals = [
-        run_ent(block).entropy for block in blocks(data, block_size_bytes=block_size_bytes)
-    ]
+    block_vals = [run_ent(block).entropy for block in blocks(data, block_size_bytes)]
     return sum(block_vals) / len(block_vals)
 
 
@@ -456,9 +521,7 @@ def ent_entropy_block_average(
 def ent_chi_square_block_average(
     data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
 ) -> float:
-    block_vals = [
-        run_ent(block).chi_square for block in blocks(data, block_size_bytes=block_size_bytes)
-    ]
+    block_vals = [run_ent(block).chi_square for block in blocks(data, block_size_bytes)]
     return sum(block_vals) / len(block_vals)
 
 
@@ -466,9 +529,7 @@ def ent_chi_square_block_average(
 def ent_monte_carlo_pi_block_average(
     data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
 ) -> float:
-    block_vals = [
-        run_ent(block).monte_carlo_pi for block in blocks(data, block_size_bytes=block_size_bytes)
-    ]
+    block_vals = [run_ent(block).monte_carlo_pi for block in blocks(data, block_size_bytes)]
     return sum(block_vals) / len(block_vals)
 
 
@@ -476,10 +537,7 @@ def ent_monte_carlo_pi_block_average(
 def ent_serial_correlation_bkock_average(
     data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
 ) -> float:
-    block_vals = [
-        run_ent(block).serial_correlation
-        for block in blocks(data, block_size_bytes=block_size_bytes)
-    ]
+    block_vals = [run_ent(block).serial_correlation for block in blocks(data, block_size_bytes)]
     return sum(block_vals) / len(block_vals)
 
 
@@ -638,7 +696,7 @@ def average_xor_per_block_8bit(
 ) -> float:
     sums = 0
     num_blocks = 0
-    for block in blocks(data, block_size_bytes=block_size_bytes):
+    for block in blocks(data, block_size_bytes):
         sums += xor_all_bytes_8bit(block)
         num_blocks += 1
     return sums / num_blocks
@@ -648,7 +706,7 @@ def average_xor_per_block_8bit(
 def average_block_average(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
     sums = 0
     num_blocks = 0
-    for block in blocks(data, block_size_bytes=block_size_bytes):
+    for block in blocks(data, block_size_bytes):
         sums += sum(block) / block_size_bytes
         num_blocks += 1
     return sums / num_blocks
@@ -670,7 +728,7 @@ def standard_deviation(data: bytes) -> float:
 def average_block_variance(data: bytes, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES) -> float:
     variances = 0
     num_blocks = 0
-    for block in blocks(data, block_size_bytes=block_size_bytes):
+    for block in blocks(data, block_size_bytes):
         variances += variance(block)
         num_blocks += 1
     return variances / num_blocks
@@ -682,7 +740,7 @@ def average_block_standard_deviation(
 ) -> float:
     deviations = 0
     num_blocks = 0
-    for block in blocks(data, block_size_bytes=block_size_bytes):
+    for block in blocks(data, block_size_bytes):
         deviations += standard_deviation(block)
         num_blocks += 1
     return deviations / num_blocks
@@ -766,7 +824,7 @@ def average_abs_difference_between_byte_arrays(data1: bytes, data2: bytes) -> fl
 # TODO: average bit on lengthi (bits on in a row)? Per byte? Per 16 bits? Per 32 bits?
 
 
-def get_byte_array_analysis_funcs() -> dict[str, Callable]:
+def get_byte_array_analysis_funcs() -> dict[str, ByteArrayCallableT]:
     funcs = {}
     for name, obj in globals().items():
         if (
@@ -778,7 +836,7 @@ def get_byte_array_analysis_funcs() -> dict[str, Callable]:
     return funcs
 
 
-def get_byte_arrays_analysis_funcs() -> dict[str, Callable]:
+def get_byte_arrays_analysis_funcs() -> dict[str, ByteArraysCallableT]:
     funcs = {}
     for name, obj in globals().items():
         if (
