@@ -1,4 +1,9 @@
-"""Analysis functions that may be useful on random binary data"""
+"""Analysis functions that may be useful on random binary data.
+Only data >= 8 bytes is supported at this time as it's not worth the overhead to check every input
+for correct sizes just to support unusual inputs. Most of these functions should support all
+bytes-type inputs. If you feel like catching the appropriate exceptions yourself and setting
+feature values to None or something, that's fine. Most exceptions are probably `ZeroDivisionError`.
+"""
 
 from collections import Counter
 from dataclasses import dataclass
@@ -17,6 +22,7 @@ _MARK_BYTE_ARRAY_ATTR = "is_anal"
 # Indicates that the function accepts 2 bytes objects and returns a float or int
 _MARK_BYTE_ARRAYS_ATTR = "is_anals"
 DEFAULT_BLOCK_SIZE_BYTES: int = 8
+# Some typedefs
 FeatureType = Union[float, int]
 ByteArrayCallableT = Callable[[bytes], FeatureType]
 ByteArraysCallableT = Callable[[bytes, bytes], FeatureType]
@@ -39,7 +45,7 @@ def set_default_block_size(block_size_bytes: int) -> int:
 
 def blocks(data: bytes, block_size_bytes: int) -> list[bytes]:
     for idx in range(0, len(data) - block_size_bytes, block_size_bytes):
-        yield data[idx, idx + block_size_bytes]
+        yield data[idx : idx + block_size_bytes]
 
 
 def _bin(byte: int) -> str:
@@ -429,18 +435,18 @@ def percent_bytes_eq_next_byte(data: bytes) -> float:
     return _percent_op_next_byte(data, _eq_op)
 
 
-def _set_up_percent_bytes_with_bits_funcs() -> None:
+def _set_up_percent_bytes_containing_bits_funcs() -> None:
     def _get_func(patt):
         return lambda data: 100.0 * sum(1 for byte in data if patt in _bin(byte)) / len(data)
 
     for bit_len in range(1, 9):
         for patt in range(0, 2**bit_len):
             patt = ("{:0" + str(bit_len) + "b}").format(patt)
-            func_name = f"percent_of_bytes_with_bits_{patt}"
+            func_name = f"percent_of_bytes_containing_bits_{patt}"
             globals()[func_name] = mark_byte_array_func(_get_func(patt))
 
 
-_set_up_percent_bytes_with_bits_funcs()
+_set_up_percent_bytes_containing_bits_funcs()
 
 
 def _set_up_percent_bytes_gt_funcs() -> None:
@@ -467,6 +473,8 @@ def _set_up_percent_freq_each_byte_funcs() -> None:
 _set_up_percent_freq_each_byte_funcs()
 
 
+# TODO: not sure these are correct. Values look off. Write tests to verify.
+#       Update: I think it might actually be fine. Test anyways.
 def _set_up_percent_of_blocks_with_byte_in_pos_funcs(
     pos: int, block_size_bytes: int = DEFAULT_BLOCK_SIZE_BYTES
 ) -> None:
