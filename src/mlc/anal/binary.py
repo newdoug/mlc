@@ -76,12 +76,15 @@ def average_byte_int(data: bytes) -> int:
     return sum(data) // len(data)
 
 
-def break_bytes(data: bytes, int_size_bytes: int, byteorder: str, signed: bool) -> list[int]:
-    def _iter():
-        for i in range(0, len(data) - int_size_bytes, int_size_bytes):
-            yield int.from_bytes(data[i : i + int_size_bytes], byteorder=byteorder, signed=signed)
+def break_bytes_iter(
+    data: bytes, int_size_bytes: int, byteorder: str, signed: bool
+) -> Iterable[int]:
+    for i in range(0, len(data) - int_size_bytes + 1, int_size_bytes):
+        yield int.from_bytes(data[i : i + int_size_bytes], byteorder=byteorder, signed=signed)
 
-    return list(_iter())
+
+def break_bytes(data: bytes, int_size_bytes: int, byteorder: str, signed: bool) -> list[int]:
+    return list(break_bytes_iter(data, int_size_bytes, byteorder, signed))
 
 
 @mark_byte_array_func
@@ -142,6 +145,86 @@ def average_int32_le(data: bytes) -> float:
 @mark_byte_array_func
 def average_int32_be(data: bytes) -> float:
     return sum(break_bytes(data, 4, "big", True)) / (len(data) // 4)
+
+
+@mark_byte_array_func
+def average_uint40_le(data: bytes) -> float:
+    return sum(break_bytes(data, 5, "little", False)) / (len(data) // 5)
+
+
+@mark_byte_array_func
+def average_uint40_be(data: bytes) -> float:
+    return sum(break_bytes(data, 5, "big", False)) / (len(data) // 5)
+
+
+@mark_byte_array_func
+def average_int40_le(data: bytes) -> float:
+    return sum(break_bytes(data, 5, "little", True)) / (len(data) // 5)
+
+
+@mark_byte_array_func
+def average_int40_be(data: bytes) -> float:
+    return sum(break_bytes(data, 5, "big", True)) / (len(data) // 5)
+
+
+@mark_byte_array_func
+def average_uint48_le(data: bytes) -> float:
+    return sum(break_bytes(data, 6, "little", False)) / (len(data) // 6)
+
+
+@mark_byte_array_func
+def average_uint48_be(data: bytes) -> float:
+    return sum(break_bytes(data, 6, "big", False)) / (len(data) // 6)
+
+
+@mark_byte_array_func
+def average_int48_le(data: bytes) -> float:
+    return sum(break_bytes(data, 6, "little", True)) / (len(data) // 6)
+
+
+@mark_byte_array_func
+def average_int48_be(data: bytes) -> float:
+    return sum(break_bytes(data, 6, "big", True)) / (len(data) // 6)
+
+
+@mark_byte_array_func
+def average_uint56_le(data: bytes) -> float:
+    return sum(break_bytes(data, 7, "little", False)) / (len(data) // 7)
+
+
+@mark_byte_array_func
+def average_uint56_be(data: bytes) -> float:
+    return sum(break_bytes(data, 7, "big", False)) / (len(data) // 7)
+
+
+@mark_byte_array_func
+def average_int56_le(data: bytes) -> float:
+    return sum(break_bytes(data, 7, "little", True)) / (len(data) // 7)
+
+
+@mark_byte_array_func
+def average_int56_be(data: bytes) -> float:
+    return sum(break_bytes(data, 7, "big", True)) / (len(data) // 7)
+
+
+@mark_byte_array_func
+def average_uint64_le(data: bytes) -> float:
+    return sum(break_bytes(data, 8, "little", False)) / (len(data) // 8)
+
+
+@mark_byte_array_func
+def average_uint64_be(data: bytes) -> float:
+    return sum(break_bytes(data, 8, "big", False)) / (len(data) // 8)
+
+
+@mark_byte_array_func
+def average_int64_le(data: bytes) -> float:
+    return sum(break_bytes(data, 8, "little", True)) / (len(data) // 8)
+
+
+@mark_byte_array_func
+def average_int64_be(data: bytes) -> float:
+    return sum(break_bytes(data, 8, "big", True)) / (len(data) // 8)
 
 
 @mark_byte_array_func
