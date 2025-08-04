@@ -1,5 +1,3 @@
-import unittest
-
 from mlc.anal.binary import (
     average_abs_difference_between_byte_arrays,
     average_abs_difference_between_bytes,

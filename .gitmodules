@@ -1,0 +1,3 @@
+[submodule "src/mlc/oeisdata"]
+	path = src/mlc/oeisdata
+	url = git@github.com:oeis/oeisdata.git

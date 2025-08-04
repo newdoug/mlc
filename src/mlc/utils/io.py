@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 import logging
 import logging.handlers
+from pathlin import Path
 import os
 import shutil
 import sys
@@ -11,14 +12,12 @@ from typing import Optional, Union
 
 import asyncio
 
+from mlc.utils.constants import LOG_ARCHIVE_DIR, LOG_DIR, SYS_LOG_PATH
 from mlc.utils.dt import get_utc_now, get_utc_now_str
 
 
 # The logger object that most are expected to use and import
 LOG: logging.Logger = logging.getLogger(__name__)
-SOURCE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-LOG_DIR = os.path.join(SOURCE_DIR, "logs")
-LOG_ARCHIVE_DIR = os.path.join(LOG_DIR, "archive")
 DEFAULT_LOG_FORMAT_STR = (
     "%(name)s|%(asctime)s.%(msecs)03d|%(levelname)s|"
     "%(process)d:%(thread)d|"
@@ -28,7 +27,6 @@ DEFAULT_LOG_FORMAT_STR = (
 DEFAULT_LOGGER_NAME = "MLC"
 # Applies to asctime. Then msecs in the format string gets milliseconds
 LOG_RECORD_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-SYS_LOG_PATH = "/dev/log"
 LOG_LEVEL_STR_TO_INT = {
     "DEBUG": logging.DEBUG,
     "INFO": logging.INFO,
@@ -38,12 +36,13 @@ LOG_LEVEL_STR_TO_INT = {
 }
 
 
-def _path_dt() -> str:
+def path_dt() -> str:
+    """Returns a base filename that has current time (UTC) in microseconds"""
     return f"{int(get_utc_now().timestamp() * 1000000)}"
 
 
 def _generate_log_filename() -> str:
-    return f"{LOG_DIR}/{DEFAULT_LOGGER_NAME}_{_path_dt()}.log"
+    return f"{LOG_DIR}/{DEFAULT_LOGGER_NAME}_{path_dt()}.log"
 
 
 def compress_logs(log_dir: str, archive_dir: str, log_archive_chunk_size: int = 100) -> None:
@@ -55,7 +54,7 @@ def compress_logs(log_dir: str, archive_dir: str, log_archive_chunk_size: int = 
     chunk_num = 0
 
     def _compress_files(filenames: list[str]):
-        arcname = f"{DEFAULT_LOGGER_NAME}_log_archive_{chunk_num}_{_path_dt()}"
+        arcname = f"{DEFAULT_LOGGER_NAME}_log_archive_{chunk_num}_{path_dt()}"
         os.makedirs(arcname, mode=0o750, exist_ok=True)
         for filename in filenames:
             if not filename:
