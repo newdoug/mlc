@@ -137,7 +137,7 @@ void delta_decode(unsigned char *buffer, int length)
 """
 
 
-def zstd_compress_wrapper(data: bytes, level: int = 22) -> bytes:
+def zstd_compress(data: bytes, level: int = 22) -> bytes:
     """ZSTD_compress doesn't have any keyword arguments, so the method used below causes an error because we pass level
     as a kwarg.
     """
@@ -148,7 +148,7 @@ def zstd_compress_wrapper(data: bytes, level: int = 22) -> bytes:
 # compression level value
 TYPE_TO_FUNCS: Dict[CompressionType, Tuple[Callable, Callable, str, int]] = {
     CompressionType.GZIP: (gzip.compress, gzip.decompress, "compresslevel", 9),
-    CompressionType.ZSTD: (zstd_compress_wrapper, zstd.ZSTD_uncompress, "level", 22),
+    CompressionType.ZSTD: (zstd_compress, zstd.ZSTD_uncompress, "level", 22),
     CompressionType.LZMA: (
         lzma.compress,
         lzma.decompress,

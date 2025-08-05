@@ -1,3 +1,5 @@
+import struct
+
 from mlc.anal.binary import (
     average_abs_difference_between_byte_arrays,
     average_abs_difference_between_bytes,
@@ -5,6 +7,7 @@ from mlc.anal.binary import (
     average_byte_int,
     average_num_bits_off,
     average_num_bits_on,
+    break_bytes,
     most_common_byte,
     percent_bits_equal,
     percent_bytes_with_bit_x_on,
@@ -56,3 +59,88 @@ def test_average_abs_difference_between_byte_arrays():
     assert average_abs_difference_between_byte_arrays(b"aa", b"aa") == 0
     assert average_abs_difference_between_byte_arrays(b"a", b"a") == 0
     assert average_abs_difference_between_byte_arrays(b"", b"") == 0
+
+
+def _break_bytes_test(data: bytes, args: list, expected: list[int]) -> None:
+    assert break_bytes(data, *args) == expected
+
+
+def test_break_bytes_unsigned_1_byte():
+    _break_bytes_test(b"\x00\x01\x02\x03", [1, "little", False], list(range(4)))
+    _break_bytes_test(b"\x00\x01\x02\x03", [1, "big", False], list(range(4)))
+    _break_bytes_test(b"\x00\x01\x02\x03", [1, "little", True], list(range(4)))
+    _break_bytes_test(b"\x00\x01\x02\x03", [1, "big", True], list(range(4)))
+
+
+def test_break_bytes_1_byte_single_byte_unsigned():
+    _break_bytes_test(b"\x00", [1, "little", False], [0])
+    _break_bytes_test(b"\xff", [1, "big", False], [0xFF])
+
+
+def test_break_bytes_1_byte_single_byte_signed():
+    _break_bytes_test(b"\xff", [1, "little", True], [-1])
+    _break_bytes_test(b"\xff", [1, "big", True], [-1])
+
+
+def test_break_bytes_all_byte_lengths_empty_data():
+    for split_amount in range(1, 8):
+        for endian in ("little", "big"):
+            for boole in (True, False):
+                _break_bytes_test(b"", [split_amount, endian, boole], [])
+
+
+def test_break_bytes_1_byte_signed():
+    _break_bytes_test(b"\xff\x01\x02\x03", [1, "little", False], [0xFF] + list(range(1, 4)))
+    _break_bytes_test(b"\xff\x01\x02\x03", [1, "big", False], [0xFF] + list(range(1, 4)))
+    _break_bytes_test(b"\xff\x01\x02\x03", [1, "little", True], [-1] + list(range(1, 4)))
+    _break_bytes_test(b"\xff\x01\x02\x03", [1, "big", True], [-1] + list(range(1, 4)))
+
+
+def test_break_bytes_2_bytes_no_truncation():
+    _break_bytes_test(
+        b"\xff\x01\x02\x03",
+        [2, "little", False],
+        [struct.unpack("<H", b"\xff\x01")[0], struct.unpack("<H", b"\x02\x03")[0]],
+    )
+    _break_bytes_test(
+        b"\xff\x01\x02\x03",
+        [2, "big", False],
+        [struct.unpack(">H", b"\xff\x01")[0], struct.unpack(">H", b"\x02\x03")[0]],
+    )
+    _break_bytes_test(
+        b"\xff\x01\x02\x03",
+        [2, "little", True],
+        [struct.unpack("<h", b"\xff\x01")[0], struct.unpack("<h", b"\x02\x03")[0]],
+    )
+    _break_bytes_test(
+        b"\xff\x01\x02\x03",
+        [2, "big", True],
+        [struct.unpack(">h", b"\xff\x01")[0], struct.unpack(">h", b"\x02\x03")[0]],
+    )
+
+
+def test_break_bytes_2_bytes_with_truncation():
+    _break_bytes_test(
+        b"\xff\x01\x02\x03\x04",
+        [2, "little", False],
+        [struct.unpack("<H", b"\xff\x01")[0], struct.unpack("<H", b"\x02\x03")[0]],
+    )
+    _break_bytes_test(
+        b"\xff\x01\x02\x03\xff",
+        [2, "big", False],
+        [struct.unpack(">H", b"\xff\x01")[0], struct.unpack(">H", b"\x02\x03")[0]],
+    )
+    _break_bytes_test(
+        b"\xff\x01\x02\x03\xab",
+        [2, "little", True],
+        [struct.unpack("<h", b"\xff\x01")[0], struct.unpack("<h", b"\x02\x03")[0]],
+    )
+    _break_bytes_test(
+        b"\xff\x01\x02\x03\xcd",
+        [2, "big", True],
+        [struct.unpack(">h", b"\xff\x01")[0], struct.unpack(">h", b"\x02\x03")[0]],
+    )
+    for endian in ("little", "big"):
+        for boole in (True, False):
+            for byte_val in range(0xFF + 1):
+                _break_bytes_test(struct.pack("<B", byte_val), [2, endian, boole], [])

@@ -148,6 +148,9 @@ see if any look especially useful.
 **** Can borrow these from various existing ciphers.
 
 * For some high-level API, if failing to determine what it is, run through `file`, `binwalk`, etc. in case its not really ciphertext
+** Or even if it is, could reveal something like some weird fault in the algorithm or recurring patterns in ciphertext
+that I didn't see before.
+** Finding low-entropy portions of ciphertext could similarly reveal something.
 
 
 ** File types (to try to guess for only given ciphertext):
@@ -332,6 +335,12 @@ bit? Every other byte swap endianness?
 * Percent prime?
 * Percent even, percent odd?
 * Euler-phi calculation?
+* Another set of scripts just trying to detect patterns generically or repeating patterns that might be meaningful and
+  then we can turn that into some quantifiable feature(s).
+* Every 4th byte, every 2nd byte, 0th byte, etc. and re-run features on it.
+* Look for counters
+* Look for timestamps and/or timestamp-like sequences
+* Map the bytes into an image format and run opencv or something on it to try to detect if common images are found.
 
 
 * Determine common ways that keys are generated:
@@ -460,7 +469,7 @@ Packages that aren't in the pyproject.toml that you just want one-off installed.
 poetry self add <package_name>
 ```
 
-If you want them to be added to `pyptoject.toml`:
+If you want them to be added to `pyproject.toml`:
 ```
 poetry add <package_name>
 ```
