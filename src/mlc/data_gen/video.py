@@ -8,10 +8,16 @@ from mlc.data_gen.data_type_base import DataTypeBase
 class VideoDataType(DataTypeBase):
     """Video data types/formats"""
 
-    MP4 = auto()
-    MKV = auto()
-    MPEG = auto()
+    AVI = auto()
     FLV = auto()
+    MKV = auto()
+    MOV = auto()
+    MP4 = auto()
+    # .mpg or .mpeg
+    MPEG = auto()
+    # 3gp
+    THREEGP = auto()
+    WMV = auto()
     # TODO: more
 
     def generate(self, settings: dict) -> bytes:

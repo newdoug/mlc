@@ -9,6 +9,7 @@ packages = [{ include = "src/mlc" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
+# TODO: clean these up once finished
 ## Make sure to install Dask with distributed and LightGBM with Dask support?
 ## Choose roles:
 ## One machine = Scheduler (start with bash command: dask-scheduler)

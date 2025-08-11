@@ -12,6 +12,8 @@ class ImageDataType(DataTypeBase):
     BMP = auto()
     CR2 = auto()
     DNG = auto()
+    # Encapsulated PostScript
+    EPS = auto()
     GIF = auto()
     HDR = auto()
     HEIF = auto()

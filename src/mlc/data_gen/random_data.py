@@ -48,54 +48,58 @@ def rand_int_in_range(low: int, high: int) -> int:
     return (int.from_bytes(os.urandom(4), byteorder="little") % (high - low)) + low
 
 
+def _rand_val_from_struct_fmt(struct_fmt: str):
+    return struct.unpack(struct_fmt, os.urandom(struct.calcsize(struct_fmt)))[0]
+
+
 def rand_uint64() -> int:
     """Random uint64"""
-    return struct.unpack("<Q", os.urandom(8))[0]
+    return _rand_val_from_struct_fmt("<Q")
 
 
 def rand_int64() -> int:
     """Random int64"""
-    return struct.unpack("<q", os.urandom(8))[0]
+    return _rand_val_from_struct_fmt("<q")
 
 
 def rand_uint32() -> int:
     """Random uint32"""
-    return struct.unpack("<I", os.urandom(4))[0]
+    return _rand_val_from_struct_fmt("<I")
 
 
 def rand_int32() -> int:
     """Random int32"""
-    return struct.unpack("<i", os.urandom(4))[0]
+    return _rand_val_from_struct_fmt("<i")
 
 
 def rand_uint16() -> int:
     """Random uint16"""
-    return struct.unpack("<H", os.urandom(2))[0]
+    return _rand_val_from_struct_fmt("<H")
 
 
 def rand_int16() -> int:
     """Random int16"""
-    return struct.unpack("<h", os.urandom(2))[0]
+    return _rand_val_from_struct_fmt("<h")
 
 
 def rand_uint8() -> int:
     """Random uint8"""
-    return struct.unpack("<B", os.urandom(1))[0]
+    return _rand_val_from_struct_fmt("<B")
 
 
 def rand_int8() -> int:
     """Random int8"""
-    return struct.unpack("<b", os.urandom(1))[0]
+    return _rand_val_from_struct_fmt("<b")
 
 
 def rand_double() -> float:
     """Random 8-byte double"""
-    return struct.unpack("<d", os.urandom(8))[0]
+    return _rand_val_from_struct_fmt("<d")
 
 
 def rand_float() -> float:
     """Random 4-byte float"""
-    return struct.unpack("<f", os.urandom(4))[0]
+    return _rand_val_from_struct_fmt("<f")
 
 
 def rand_bytes_in_range(length: int, low: int, high: int) -> bytes:
