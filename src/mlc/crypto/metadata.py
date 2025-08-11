@@ -1,3 +1,9 @@
+"""Tracks the possible metadata associated with a cipher operation.
+TODO: tracking the metadata is something we want, but writing these wrapper functions with it feels a little
+unnecessarily complex.
+TODO: implement more ciphers. DES, TRIPLE_DES, SM4, whatever else python-cryptography and others support.
+"""
+
 from typing import Optional
 
 from cryptography.hazmat.primitives.ciphers import modes
@@ -13,7 +19,10 @@ class CipherMetadata(BaseModel):
     nonce: Optional[bytes] = None
     mode: Optional[str] = None
 
-    def mode_str_to_mode(self):
+    def mode_str_to_mode(self) -> modes.Mode:
+        """Convert this object's mode string to mode type from the crypto library.
+        This list matches the modes from the crypto library.
+        """
         if self.mode == "CBC":
             return modes.CBC
         if self.mode == "CFB":

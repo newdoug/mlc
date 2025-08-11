@@ -10,6 +10,8 @@ class GeneratedData(SQLModel, table=True):
     __tablename__ = "generated_data"
 
     id: int = Field(primary_key=True)
+    # TODO: this needs filling out more. Also probably should consider how it could be deduplicated and/or guided with
+    #       the other data analysis project.
     data_type: str
     tags: str
     # E.g., ciphertexts would reference the plaintext that came before it in a
@@ -18,12 +20,12 @@ class GeneratedData(SQLModel, table=True):
     prev_data: Optional[GeneratedData] = Relationship(back_populates="prev_data_id")
     # base64
     data: str
-    # JSON
+    # JSON string
     features: Optional[str] = None
     created: dt = Field(default_factory=get_utc_now)
     seed: Optional[int] = None
     method: Optional[str] = None
     # Version of software used to generated this data
     sw_version: Optional[str] = Field(default=CURRENT_VERSION)
-    # JSON
+    # JSON string
     metadata: Optional[str] = None

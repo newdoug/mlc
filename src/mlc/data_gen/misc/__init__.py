@@ -19,6 +19,7 @@ class MiscFileDataType(DataTypeBase):
     JSON = auto()
     SAML = auto()
     TOML = auto()
+    TSV = auto()
     XML = auto()
     YAML = auto()
     YANG = auto()

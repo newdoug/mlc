@@ -111,7 +111,7 @@ class CompressionType(BetterEnum):
 
 
 # Example code (dead, but left for future reference) showing delta compression
-# algorithm implementation
+# algorithm implementation. TODO
 DELTA_EX_CODE = """
 void delta_encode(unsigned char *buffer, int length)
 {

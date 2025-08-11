@@ -36,3 +36,4 @@ def calc_crc(data: bytes, crc_type: CrcType, crc_settings: CrcSettings) -> bytes
     """Calculate a CRC over `data` of type `crc_type` with settings
     `crc_settings`
     """
+    # TODO

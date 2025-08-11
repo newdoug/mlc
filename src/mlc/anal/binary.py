@@ -887,34 +887,6 @@ def average_abs_difference_between_byte_arrays(data1: bytes, data2: bytes) -> fl
     return diff_sum / (min(data1_len_min_1, data2_len_min_1) + 1)
 
 
-# TODO: track occurrences and frequencies of all byte strings <= length 5? 4? 8?
-# TODO: detect clusters of bytes that are close to each other in value? E.g.
-# \xAB\x29\x63\x66\x62\x5F\x72 might trigger "bytes '\x63\x66\x62\x5F'
-# adjacent bytes were close in value (like a cluster).
-#   - Maybe a clustering algorithm?
-# TODO: perform various transformations on the data (linear, non-linear, steps
-# of AES, etc.) and then perform binary analysis on that too.
-# TODO: track if any correlations between plaintext and ciphertext exist? What
-# about between plaintext and transformed ciphertext? What about between
-# ciphertext and transformed plaintext? What about between transformed plaintext
-# and transformed ciphertext?
-# TODO: use various transformations (probably pieces of AES) on blocks/plaintext/ciphertext using
-# just piece of known key and compare those transformations with other values?
-# Plaintext? Ciphertext? Single blocks of plaintext? Single blocks of
-# ciphertext? Transformed ciphertext? Etc.
-# TODO: most common bit position (4, 8, and 16 bits)
-# TODO: basic frequency of each byte. Of each 16 bits?
-# TODO: similar functions, but on nibbles level
-# TODO: similar functions, but on 16-bit level
-# TODO: similar functions, but per block and between each possible pair of bytes in an 8-byte block
-#       idk what I mean by this
-# TODO: percent similarity between plaintext and ciphertext
-# TODO: check for recurring patterns of bits
-# TODO: bit transitions (how often a bit transitions from on to off or off to on between indices)?
-#       Average per byte? Average byte 16 bits? 32 bits?
-# TODO: average bit on lengthi (bits on in a row)? Per byte? Per 16 bits? Per 32 bits?
-
-
 def get_byte_array_analysis_funcs() -> dict[str, ByteArrayCallableT]:
     funcs = {}
     for name, obj in globals().items():

@@ -8,6 +8,7 @@ from mlc.utils.dt import get_utc_now
 
 class LogRecord(SQLModel, table=True):
     __tablename__ = "log_records"
+    # TODO: track what machine these were produced on? Maybe each runner could get an instance ID or something?
 
     id: int = Field(primary_key=True)
     created: dt = Field(default_factory=get_utc_now)

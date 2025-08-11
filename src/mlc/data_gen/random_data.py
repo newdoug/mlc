@@ -6,6 +6,7 @@ import struct
 from typing import Any
 
 from mlc.data_gen.data_type_base import DataTypeBase, DataTypeSettingKey
+from mlc.utils.rand import rand_bytes
 
 
 # Range (low inclusive, high exclusive) of integers that are valid ASCII
@@ -110,11 +111,6 @@ def rand_bytes_in_range(length: int, low: int, high: int) -> bytes:
     for i in range(length):
         data[i] = rand_int_in_range(low, high)
     return bytes(data)
-
-
-def rand_bytes(length: int) -> bytes:
-    """Random bytes of length `length`"""
-    return os.urandom(length)
 
 
 def rand_ascii_bytes(length: int) -> bytes:
